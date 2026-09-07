@@ -345,7 +345,7 @@ function FuturisticServiceCard({ service, index, onOpenDetails }) {
   );
 }
 
-export default function MajorServicesSection({ onOpenBooking }) {
+export default function MajorServicesSection({ hospitalName, onOpenBooking }) {
   const [selectedService, setSelectedService] = useState(null);
   const [activeCategory, setActiveCategory] = useState('ALL');
 
@@ -361,7 +361,7 @@ export default function MajorServicesSection({ onOpenBooking }) {
   return (
     <section id="major-services" className="py-24 lg:py-32 bg-[#F8FBFF] relative overflow-hidden">
       {/* Background Text Scroller */}
-      <HospitalMarqueeBackground reverse={true} />
+      <HospitalMarqueeBackground hospitalName={hospitalName} reverse={true} />
 
       {/* Subtle Background Glows */}
 

@@ -202,7 +202,7 @@ function Journey3DCard({ step, idx, isActive, onClick, onHover }) {
   );
 }
 
-export default function PatientJourneySection({ onOpenBooking }) {
+export default function PatientJourneySection({ hospitalName, onOpenBooking }) {
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
 
@@ -221,7 +221,7 @@ export default function PatientJourneySection({ onOpenBooking }) {
   return (
     <section id="journey" className="relative py-24 lg:py-36 bg-gradient-to-b from-[#F8FBFF] via-white to-[#F8FBFF] dark:from-[#07131E] dark:via-[#091B2C] dark:to-[#07131E] overflow-hidden transition-colors duration-300">
       {/* Background Text Scroller */}
-      <HospitalMarqueeBackground reverse={false} />
+      <HospitalMarqueeBackground hospitalName={hospitalName} reverse={false} />
 
       {/* Dynamic 3D Ambient Medical Orbs in Background */}
 

@@ -89,24 +89,46 @@
     linear-gradient(to bottom, rgba(47, 128, 237, 0.03) 1px, transparent 1px);
 }
 
-/* Infinite Marquee Animation for Hospital Name */
-@keyframes marquee-scroll {
+/* Infinite Continuous Marquees for Hospital Name Background */
+@keyframes marquee-continuous {
   0% {
     transform: translateX(0%);
   }
-
   100% {
     transform: translateX(-50%);
   }
 }
 
+@keyframes marquee-continuous-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-marquee-continuous {
+  display: flex;
+  width: max-content;
+  animation: marquee-continuous 45s linear infinite;
+}
+
+.animate-marquee-continuous-reverse {
+  display: flex;
+  width: max-content;
+  animation: marquee-continuous-reverse 45s linear infinite;
+}
+
 .animate-marquee-slow {
   display: flex;
   width: max-content;
-  animation: marquee-scroll 70s linear infinite;
+  animation: marquee-continuous 55s linear infinite;
 }
 
-.animate-marquee-slow:hover {
+.animate-marquee-slow:hover,
+.animate-marquee-continuous:hover,
+.animate-marquee-continuous-reverse:hover {
   animation-play-state: paused;
 }
 
@@ -182,31 +204,33 @@
 
 /* Futuristic Parallax Text Scroller Styling */
 .stroke-text-medical {
-  -webkit-text-stroke: 2px rgba(47, 128, 237, 0.45);
+  -webkit-text-stroke: 2.5px rgba(47, 128, 237, 0.45);
   color: rgba(47, 128, 237, 0.12);
-  text-shadow: 0 0 40px rgba(47, 128, 237, 0.15);
+  text-shadow: 0 0 40px rgba(47, 128, 237, 0.2);
   letter-spacing: 0.12em;
 }
 
 .stroke-text-medical-cyan {
-  -webkit-text-stroke: 2px rgba(0, 194, 203, 0.5);
+  -webkit-text-stroke: 2.5px rgba(0, 194, 203, 0.5);
   color: rgba(0, 194, 203, 0.12);
-  text-shadow: 0 0 40px rgba(0, 194, 203, 0.15);
+  text-shadow: 0 0 40px rgba(0, 194, 203, 0.2);
   letter-spacing: 0.12em;
 }
 
 .stroke-text-solid {
-  color: rgba(47, 128, 237, 0.12);
+  color: rgba(47, 128, 237, 0.14);
 }
 
 .dark .stroke-text-medical {
-  -webkit-text-stroke: 2px rgba(59, 130, 246, 0.5);
-  color: rgba(59, 130, 246, 0.15);
+  -webkit-text-stroke: 2.5px rgba(59, 130, 246, 0.6);
+  color: rgba(59, 130, 246, 0.18);
+  text-shadow: 0 0 40px rgba(59, 130, 246, 0.25);
 }
 
 .dark .stroke-text-medical-cyan {
-  -webkit-text-stroke: 2px rgba(6, 182, 212, 0.55);
-  color: rgba(6, 182, 212, 0.15);
+  -webkit-text-stroke: 2.5px rgba(6, 182, 212, 0.65);
+  color: rgba(6, 182, 212, 0.18);
+  text-shadow: 0 0 40px rgba(6, 182, 212, 0.25);
 }
 
 .will-change-transform {
