@@ -1,0 +1,214 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: #F8FBFF;
+    --medical-blue: #2F80ED;
+    --soft-blue: #DCEEFF;
+    --navy-primary: #0B2438;
+    --glass-bg: rgba(255, 255, 255, 0.72);
+  }
+
+  .dark {
+    --bg-primary: #07131E;
+    --medical-blue: #3B82F6;
+    --soft-blue: #1E3A5F;
+    --navy-primary: #F0F6FF;
+    --glass-bg: rgba(14, 31, 48, 0.75);
+  }
+
+  html {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--navy-primary);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+    letter-spacing: -0.025em;
+  }
+}
+
+/* Glassmorphic Apple-style surfaces */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 16px 40px 0 rgba(11, 36, 56, 0.05);
+}
+
+.glass-panel-subtle {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 30px -5px rgba(11, 36, 56, 0.06);
+}
+
+.glass-dropdown {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 25px 50px -12px rgba(11, 36, 56, 0.15);
+}
+
+/* Futuristic grid and mesh gradients */
+.medical-mesh-bg {
+  background-image:
+    radial-gradient(at 15% 15%, rgba(47, 128, 237, 0.08) 0px, transparent 50%),
+    radial-gradient(at 85% 20%, rgba(220, 238, 255, 0.6) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(47, 128, 237, 0.05) 0px, transparent 60%);
+}
+
+.medical-subtle-grid {
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, rgba(47, 128, 237, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(47, 128, 237, 0.03) 1px, transparent 1px);
+}
+
+/* Infinite Marquee Animation for Hospital Name */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-slow {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 70s linear infinite;
+}
+
+.animate-marquee-slow:hover {
+  animation-play-state: paused;
+}
+
+/* Fast Broadcast Ticker Marquee for Hero Sub-bar */
+@keyframes ticker-slide {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ticker-marquee {
+  display: flex;
+  width: max-content;
+  animation: ticker-slide 32s linear infinite;
+}
+
+.animate-ticker-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* 3D Transform Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Subtle holographic pulse */
+@keyframes holoPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(47, 128, 237, 0.2), inset 0 0 15px rgba(47, 128, 237, 0.1);
+  }
+
+  50% {
+    box-shadow: 0 0 30px rgba(47, 128, 237, 0.4), inset 0 0 25px rgba(47, 128, 237, 0.25);
+  }
+}
+
+.holo-card {
+  animation: holoPulse 4s ease-in-out infinite;
+}
+
+/* Custom sleek scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F8FBFF;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C4D9EC;
+  border-radius: 9999px;
+  border: 2px solid #F8FBFF;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2F80ED;
+}
+
+/* Futuristic Parallax Text Scroller Styling */
+.stroke-text-medical {
+  -webkit-text-stroke: 2px rgba(47, 128, 237, 0.45);
+  color: rgba(47, 128, 237, 0.12);
+  text-shadow: 0 0 40px rgba(47, 128, 237, 0.15);
+  letter-spacing: 0.12em;
+}
+
+.stroke-text-medical-cyan {
+  -webkit-text-stroke: 2px rgba(0, 194, 203, 0.5);
+  color: rgba(0, 194, 203, 0.12);
+  text-shadow: 0 0 40px rgba(0, 194, 203, 0.15);
+  letter-spacing: 0.12em;
+}
+
+.stroke-text-solid {
+  color: rgba(47, 128, 237, 0.12);
+}
+
+.dark .stroke-text-medical {
+  -webkit-text-stroke: 2px rgba(59, 130, 246, 0.5);
+  color: rgba(59, 130, 246, 0.15);
+}
+
+.dark .stroke-text-medical-cyan {
+  -webkit-text-stroke: 2px rgba(6, 182, 212, 0.55);
+  color: rgba(6, 182, 212, 0.15);
+}
+
+.will-change-transform {
+  will-change: transform;
+}
