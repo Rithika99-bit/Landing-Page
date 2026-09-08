@@ -11,6 +11,8 @@ import FinalCtaSection from './components/cta/FinalCtaSection';
 import Footer from './components/layout/Footer';
 import AppointmentModal from './components/modals/AppointmentModal';
 import DoctorProfileModal from './components/modals/DoctorProfileModal';
+import EmergencyCareModal from './components/modals/EmergencyCareModal';
+import MyAppointmentsDrawer from './components/modals/MyAppointmentsDrawer';
 import LoginPage from './components/auth/LoginPage';
 import HospitalTickerBanner from './components/ui/HospitalTickerBanner';
 import ScrollProgressBar from './components/ui/ScrollProgressBar';
@@ -25,6 +27,8 @@ export default function App() {
   const [theme, setTheme] = useState('light'); // 'light' | 'dark'
   const [hospitalName, setHospitalName] = useState(DEFAULT_HOSPITAL_NAME);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [emergencyModalOpen, setEmergencyModalOpen] = useState(false);
+  const [appointmentsDrawerOpen, setAppointmentsDrawerOpen] = useState(false);
   const [selectedDoctorForBooking, setSelectedDoctorForBooking] = useState(null);
   const [selectedDoctorForProfile, setSelectedDoctorForProfile] = useState(null);
 
@@ -96,15 +100,25 @@ export default function App() {
       {/* 1. Floating Glass Navigation */}
       <Navbar
         hospitalName={hospitalName}
-        onOpenBooking={() => handleOpenBooking()}
+        onOpenBooking={() => {
+          const el = document.getElementById('hero');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }}
         onOpenLogin={() => setCurrentView('login')}
+        onOpenEmergency={() => setEmergencyModalOpen(true)}
+        onOpenAppointments={() => setAppointmentsDrawerOpen(true)}
         onChangeHospitalName={setHospitalName}
       />
 
-      {/* 2. Immersive Hero Section with 3D Medical Canvas & AI Doctor */}
+      {/* 2. Central Futuristic 3D Anatomy Hero & Continuous Booking Stream */}
       <HeroSection
         hospitalName={hospitalName}
-        onOpenBooking={() => handleOpenBooking()}
+        onOpenBooking={() => {
+          const el = document.getElementById('hero');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }}
+        onOpenAppointmentsDrawer={() => setAppointmentsDrawerOpen(true)}
+        onOpenEmergencyModal={() => setEmergencyModalOpen(true)}
       />
 
       {/* Hospital Name Scrolling Ticker Banner Under Hero Bar */}
@@ -250,6 +264,25 @@ export default function App() {
         isOpen={!!selectedDoctorForProfile}
         onClose={handleCloseProfile}
         onBookDoctor={(doc) => handleOpenBooking(doc)}
+      />
+
+      {/* 24/7 Emergency Care Rapid Response Modal */}
+      <EmergencyCareModal
+        isOpen={emergencyModalOpen}
+        onClose={() => setEmergencyModalOpen(false)}
+        hospitalName={hospitalName}
+      />
+
+      {/* My Appointments Slide-Over Drawer */}
+      <MyAppointmentsDrawer
+        isOpen={appointmentsDrawerOpen}
+        onClose={() => setAppointmentsDrawerOpen(false)}
+        onBookNew={() => {
+          setAppointmentsDrawerOpen(false);
+          const el = document.getElementById('hero');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }}
+        hospitalName={hospitalName}
       />
 
     </div>
