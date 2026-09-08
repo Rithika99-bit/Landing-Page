@@ -51,8 +51,9 @@ export default function KineticTextScroller({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full overflow-hidden py-4 sm:py-5 border-y border-blue-100/90 dark:border-blue-900/60 bg-gradient-to-r from-blue-50/95 via-white to-blue-50/95 dark:from-[#0B1E32]/95 dark:via-[#0E243A] dark:to-[#0B1E32]/95 backdrop-blur-xl shadow-[0_4px_24px_rgba(47,128,237,0.08)] select-none z-20 ${variant === "angled" ? "-rotate-1 sm:-rotate-1.5 my-8 scale-105" : ""
-        } ${className}`}
+      className={`relative w-full overflow-hidden py-4 sm:py-5 border-y border-blue-100/90 dark:border-blue-900/60 bg-gradient-to-r from-blue-50/95 via-white to-blue-50/95 dark:from-[#0B1E32]/95 dark:via-[#0E243A] dark:to-[#0B1E32]/95 backdrop-blur-xl shadow-[0_4px_24px_rgba(47,128,237,0.08)] select-none z-20 ${
+        variant === "angled" ? "-rotate-1 sm:-rotate-1.5 my-8 scale-105" : ""
+      } ${className}`}
       aria-hidden="true"
     >
       {/* Edge gradient fade masks */}
@@ -63,8 +64,9 @@ export default function KineticTextScroller({
         <div
           className="flex items-center whitespace-nowrap py-1 group hover:[animation-play-state:paused]"
           style={{
-            animation: `ticker-slide ${reverse ? 38 : 34}s linear infinite ${reverse ? "reverse" : "normal"
-              }`,
+            animation: `ticker-slide ${reverse ? 38 : 34}s linear infinite ${
+              reverse ? "reverse" : "normal"
+            }`,
           }}
         >
           {repeatedItems.map((item, index) => {

@@ -275,8 +275,8 @@ function FuturisticServiceCard({ service, index, onOpenDetails }) {
           {/* Floating Department Icon */}
           <div
             className={`w-13 h-13 p-3.5 rounded-2xl flex items-center justify-center transition-all duration-300 ${isHovered
-              ? `bg-gradient-to-tr ${theme.color} text-white shadow-lg scale-110 rotate-3`
-              : 'bg-blue-50/90 text-[#2F80ED] shadow-sm'
+                ? `bg-gradient-to-tr ${theme.color} text-white shadow-lg scale-110 rotate-3`
+                : 'bg-blue-50/90 text-[#2F80ED] shadow-sm'
               }`}
           >
             <IconComponent className="w-6 h-6" />
@@ -392,8 +392,8 @@ export default function MajorServicesSection({ onOpenBooking }) {
               key={cat}
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 border ${activeCategory === cat
-                ? 'bg-[#2F80ED] text-white border-[#2F80ED] shadow-md shadow-blue-500/20 scale-[1.02]'
-                : 'bg-white text-[#4A6278] border-gray-200 hover:border-blue-300 hover:text-[#0B2438]'
+                  ? 'bg-[#2F80ED] text-white border-[#2F80ED] shadow-md shadow-blue-500/20 scale-[1.02]'
+                  : 'bg-white text-[#4A6278] border-gray-200 hover:border-blue-300 hover:text-[#0B2438]'
                 }`}
             >
               {cat}
