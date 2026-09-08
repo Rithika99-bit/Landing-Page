@@ -88,7 +88,7 @@ export default function KineticTextScroller({
                   className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#2F80ED]/15 dark:bg-[#2F80ED]/25 border border-[#2F80ED]/30 mx-3 shadow-sm"
                 >
                   <span className="w-2 h-2 rounded-full bg-[#2F80ED] animate-ping" />
-                  <span className="font-mono text-xs sm:text-sm font-black tracking-widest text-[#1E6FD9] dark:text-blue-300 uppercase">
+                  <span className="font-unbounded text-xs sm:text-sm font-black tracking-widest text-[#1E6FD9] dark:text-blue-300 uppercase">
                     {item}
                   </span>
                 </span>
@@ -98,7 +98,7 @@ export default function KineticTextScroller({
             return (
               <span
                 key={index}
-                className="font-display font-extrabold text-xs sm:text-sm tracking-[0.16em] text-[#0B2438] dark:text-slate-200 uppercase px-3"
+                className="font-display font-bold text-xs sm:text-sm tracking-[0.16em] text-[#0B2438] dark:text-slate-200 uppercase px-3"
               >
                 {item}
               </span>

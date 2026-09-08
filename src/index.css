@@ -202,35 +202,103 @@
   background: #2F80ED;
 }
 
-/* Futuristic Parallax Text Scroller Styling */
+/* Futuristic Luxury Parallax Text Scroller Styling (Unbounded & Syne) */
+.font-unbounded {
+  font-family: 'Unbounded', system-ui, sans-serif;
+}
+
+.font-syne {
+  font-family: 'Syne', system-ui, sans-serif;
+}
+
+/* Primary Hospital Name - Iridescent Crystalline Gradient with Fine Cyber Stroke */
+.stroke-text-unbounded {
+  font-family: 'Unbounded', system-ui, sans-serif;
+  -webkit-text-stroke: 2px rgba(47, 128, 237, 0.42);
+  background: linear-gradient(125deg, rgba(47, 128, 237, 0.28) 0%, rgba(0, 194, 203, 0.38) 45%, rgba(99, 102, 241, 0.24) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 35px rgba(47, 128, 237, 0.25));
+  letter-spacing: 0.16em;
+}
+
+.dark .stroke-text-unbounded {
+  -webkit-text-stroke: 2px rgba(59, 130, 246, 0.65);
+  background: linear-gradient(125deg, rgba(59, 130, 246, 0.45) 0%, rgba(6, 182, 212, 0.55) 50%, rgba(168, 85, 247, 0.4) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 45px rgba(59, 130, 246, 0.4));
+}
+
+/* Secondary Hospital Name / Lane 2 - Syne High-Fashion Precision Aesthetic */
+.stroke-text-syne {
+  font-family: 'Syne', system-ui, sans-serif;
+  -webkit-text-stroke: 2px rgba(0, 194, 203, 0.45);
+  background: linear-gradient(125deg, rgba(0, 194, 203, 0.3) 0%, rgba(47, 128, 237, 0.32) 50%, rgba(16, 185, 129, 0.25) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 35px rgba(0, 194, 203, 0.25));
+  letter-spacing: 0.18em;
+}
+
+.dark .stroke-text-syne {
+  -webkit-text-stroke: 2px rgba(6, 182, 212, 0.65);
+  background: linear-gradient(125deg, rgba(6, 182, 212, 0.45) 0%, rgba(59, 130, 246, 0.48) 50%, rgba(52, 211, 153, 0.35) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 45px rgba(6, 182, 212, 0.4));
+}
+
+/* Sub-phrases hollow wireframe stroke */
+.stroke-text-hollow-blue {
+  font-family: 'Unbounded', system-ui, sans-serif;
+  -webkit-text-stroke: 1.5px rgba(47, 128, 237, 0.28);
+  color: transparent;
+  letter-spacing: 0.14em;
+}
+
+.stroke-text-hollow-cyan {
+  font-family: 'Syne', system-ui, sans-serif;
+  -webkit-text-stroke: 1.5px rgba(0, 194, 203, 0.28);
+  color: transparent;
+  letter-spacing: 0.16em;
+}
+
+.dark .stroke-text-hollow-blue {
+  -webkit-text-stroke: 1.5px rgba(59, 130, 246, 0.4);
+}
+
+.dark .stroke-text-hollow-cyan {
+  -webkit-text-stroke: 1.5px rgba(6, 182, 212, 0.4);
+}
+
+/* Legacy stroke-text backwards compatibility */
 .stroke-text-medical {
-  -webkit-text-stroke: 2.5px rgba(47, 128, 237, 0.45);
-  color: rgba(47, 128, 237, 0.12);
-  text-shadow: 0 0 40px rgba(47, 128, 237, 0.2);
-  letter-spacing: 0.12em;
+  font-family: 'Unbounded', system-ui, sans-serif;
+  -webkit-text-stroke: 2px rgba(47, 128, 237, 0.4);
+  color: rgba(47, 128, 237, 0.14);
+  text-shadow: 0 0 35px rgba(47, 128, 237, 0.2);
+  letter-spacing: 0.14em;
 }
 
 .stroke-text-medical-cyan {
-  -webkit-text-stroke: 2.5px rgba(0, 194, 203, 0.5);
-  color: rgba(0, 194, 203, 0.12);
-  text-shadow: 0 0 40px rgba(0, 194, 203, 0.2);
-  letter-spacing: 0.12em;
-}
-
-.stroke-text-solid {
-  color: rgba(47, 128, 237, 0.14);
+  font-family: 'Syne', system-ui, sans-serif;
+  -webkit-text-stroke: 2px rgba(0, 194, 203, 0.45);
+  color: rgba(0, 194, 203, 0.14);
+  text-shadow: 0 0 35px rgba(0, 194, 203, 0.2);
+  letter-spacing: 0.16em;
 }
 
 .dark .stroke-text-medical {
-  -webkit-text-stroke: 2.5px rgba(59, 130, 246, 0.6);
-  color: rgba(59, 130, 246, 0.18);
-  text-shadow: 0 0 40px rgba(59, 130, 246, 0.25);
+  -webkit-text-stroke: 2px rgba(59, 130, 246, 0.6);
+  color: rgba(59, 130, 246, 0.2);
+  text-shadow: 0 0 45px rgba(59, 130, 246, 0.3);
 }
 
 .dark .stroke-text-medical-cyan {
-  -webkit-text-stroke: 2.5px rgba(6, 182, 212, 0.65);
-  color: rgba(6, 182, 212, 0.18);
-  text-shadow: 0 0 40px rgba(6, 182, 212, 0.25);
+  -webkit-text-stroke: 2px rgba(6, 182, 212, 0.65);
+  color: rgba(6, 182, 212, 0.2);
+  text-shadow: 0 0 45px rgba(6, 182, 212, 0.3);
 }
 
 .will-change-transform {

@@ -26,6 +26,8 @@ export default {
         display: ['"Outfit"', '"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
         outfit: ['"Outfit"', 'sans-serif'],
         mono: ['"Space Grotesk"', 'monospace'],
+        unbounded: ['"Unbounded"', 'sans-serif'],
+        syne: ['"Syne"', 'sans-serif'],
       },
       boxShadow: {
         'glass-subtle': '0 8px 32px 0 rgba(11, 36, 56, 0.05)',

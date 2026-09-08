@@ -33,7 +33,7 @@ export default function HospitalTickerBanner({ hospitalName = "AETHERIA HEALTH" 
             {item.highlight ? (
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2F80ED]/10 border border-[#2F80ED]/20 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-[#2F80ED] animate-ping" />
-                <span className="font-extrabold text-xs sm:text-sm tracking-wider text-[#2F80ED] font-mono">
+                <span className="font-black text-xs sm:text-sm tracking-wider text-[#2F80ED] font-unbounded">
                   [ {item.text} ]
                 </span>
               </span>
