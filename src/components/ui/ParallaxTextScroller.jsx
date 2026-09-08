@@ -1,18 +1,16 @@
 import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 
 /**
  * ParallaxTextScroller:
- * Interactive multi-lane background text scroller that animates continuously AND
- * dynamically shifts with the user's scroll speed and direction!
- * Styled with hollow futuristic stroke text, subtle ambient glows, and high-end hospital aesthetics.
+ * Interactive multi-lane background text scroller with soft typography and smooth spring motion.
  */
 export default function ParallaxTextScroller({
   hospitalName = "AETHERIA HEALTH",
   phrasesTop = null,
   phrasesBottom = null,
   opacity = 0.9,
-  speed = 1.2,
+  speed = 1,
   className = "",
   showDualLane = true,
 }) {
@@ -23,15 +21,20 @@ export default function ParallaxTextScroller({
     offset: ["start end", "end start"],
   });
 
-  const xTop = useTransform(scrollYProgress, [0, 1], [-350 * speed, 350 * speed]);
-  const xBottom = useTransform(scrollYProgress, [0, 1], [350 * speed, -350 * speed]);
+  const rawXTop = useTransform(scrollYProgress, [0, 1], [-220 * speed, 220 * speed]);
+  const rawXBottom = useTransform(scrollYProgress, [0, 1], [220 * speed, -220 * speed]);
+
+  const xTop = useSpring(rawXTop, { stiffness: 80, damping: 24, mass: 0.5 });
+  const xBottom = useSpring(rawXBottom, { stiffness: 80, damping: 24, mass: 0.5 });
+
+  const cleanName = hospitalName.replace(/[\[\]]/g, '').trim().toUpperCase();
 
   const defaultPhrasesTop = [
-    `[ ${hospitalName.toUpperCase()} ]`,
+    cleanName,
     "ADVANCED ROBOTIC SURGERY",
     "GENOMIC DIGITAL TWIN",
     "SUB-CELLULAR AI DIAGNOSTICS",
-    `[ ${hospitalName.toUpperCase()} ]`,
+    cleanName,
     "24/7 TRAUMA & TELEHEALTH",
     "JCI GOLD EXCELLENCE",
   ];
@@ -45,8 +48,8 @@ export default function ParallaxTextScroller({
     "100% PRIVATE SUITES",
   ];
 
-  const topItems = phrasesTop || defaultPhrasesTop;
-  const bottomItems = phrasesBottom || defaultPhrasesBottom;
+  const topItems = (phrasesTop || defaultPhrasesTop).map(t => typeof t === 'string' ? t.replace(/[\[\]]/g, '').trim() : t);
+  const bottomItems = (phrasesBottom || defaultPhrasesBottom).map(t => typeof t === 'string' ? t.replace(/[\[\]]/g, '').trim() : t);
 
   const repeatedTop = [...topItems, ...topItems, ...topItems];
   const repeatedBottom = [...bottomItems, ...bottomItems, ...bottomItems];
@@ -58,8 +61,8 @@ export default function ParallaxTextScroller({
       style={{ opacity }}
       aria-hidden="true"
     >
-      <div className="absolute inset-y-0 left-0 w-20 sm:w-40 bg-gradient-to-r from-[#F8FBFF] dark:from-[#07131E] to-transparent z-10 pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-20 sm:w-40 bg-gradient-to-l from-[#F8FBFF] dark:from-[#07131E] to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-y-0 left-0 w-28 sm:w-56 bg-gradient-to-r from-[#F8FBFF] dark:from-[#080B1A] via-[#F8FBFF]/85 dark:via-[#080B1A]/85 to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-28 sm:w-56 bg-gradient-to-l from-[#F8FBFF] dark:from-[#080B1A] via-[#F8FBFF]/85 dark:via-[#080B1A]/85 to-transparent z-10 pointer-events-none" />
 
       <motion.div
         style={{ x: xTop }}
@@ -69,10 +72,10 @@ export default function ParallaxTextScroller({
           {repeatedTop.map((text, idx) => (
             <span
               key={`top-${idx}`}
-              className="inline-flex items-center gap-6 px-8 text-6xl sm:text-8xl lg:text-9xl font-black uppercase tracking-[0.16em] stroke-text-medical leading-none font-display select-none"
+              className="inline-flex items-center gap-6 sm:gap-8 px-8 text-5xl sm:text-7xl lg:text-8xl font-bold uppercase tracking-wider soft-watermark-text leading-none font-display select-none"
             >
               <span>{text}</span>
-              <span className="text-[#2F80ED]/60 text-3xl sm:text-4xl font-normal">✦</span>
+              <span className="text-blue-400/40 text-2xl sm:text-4xl font-light">✦</span>
             </span>
           ))}
         </div>
@@ -92,10 +95,10 @@ export default function ParallaxTextScroller({
             {repeatedBottom.map((text, idx) => (
               <span
                 key={`bot-${idx}`}
-                className="inline-flex items-center gap-6 px-8 text-5xl sm:text-7xl lg:text-8xl font-black uppercase tracking-[0.18em] stroke-text-medical-cyan leading-none font-display select-none"
+                className="inline-flex items-center gap-6 sm:gap-8 px-8 text-4xl sm:text-6xl lg:text-7xl font-bold uppercase tracking-wider soft-watermark-cyan leading-none font-display select-none"
               >
                 <span>{text}</span>
-                <span className="text-[#00C2CB]/60 text-2xl sm:text-3xl font-normal">✦</span>
+                <span className="text-cyan-400/40 text-xl sm:text-3xl font-light">✦</span>
               </span>
             ))}
           </div>

@@ -153,13 +153,19 @@ export default function AboutUsSection({ hospitalName, onOpenBooking }) {
               </span>
             </div>
 
-            {/* Display Headline */}
-            <h2 className="font-display text-4xl sm:text-5xl lg:text-[3.25rem] font-black text-[#0B2438] tracking-tight leading-[1.12]">
+            {/* Display Headline with clipPath reveal */}
+            <motion.h2
+              initial={{ opacity: 0, y: 30, clipPath: 'inset(100% 0% 0% 0%)' }}
+              whileInView={{ opacity: 1, y: 0, clipPath: 'inset(0% 0% 0% 0%)' }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+              className="font-display text-4xl sm:text-5xl lg:text-[3.25rem] font-black text-[#0B2438] tracking-tight leading-[1.12]"
+            >
               Pioneering Medicine.{' '}
               <span className="bg-gradient-to-r from-[#2F80ED] via-[#1E6FD9] to-[#00C2CB] bg-clip-text text-transparent drop-shadow-sm">
                 Personalized Care.
               </span>
-            </h2>
+            </motion.h2>
 
             {/* Narrative Paragraph */}
             <p className="text-base sm:text-lg text-[#334E68] leading-relaxed font-normal">
@@ -294,9 +300,15 @@ export default function AboutUsSection({ hospitalName, onOpenBooking }) {
               <Sparkles className="w-3.5 h-3.5 text-[#2F80ED]" />
               <span>THE PATIENT ADVANTAGE</span>
             </div>
-            <h3 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0B2438] tracking-tight mb-3">
+            <motion.h3
+              initial={{ opacity: 0, y: 25, clipPath: 'inset(100% 0% 0% 0%)' }}
+              whileInView={{ opacity: 1, y: 0, clipPath: 'inset(0% 0% 0% 0%)' }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+              className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0B2438] tracking-tight mb-3"
+            >
               Why Patients Choose {hospitalName}
-            </h3>
+            </motion.h3>
             <p className="text-xs sm:text-sm text-[#4A6278] max-w-xl mx-auto">
               Hover over or select each pillar below to explore our technological advantages, clinical metrics, and care standards.
             </p>
@@ -432,8 +444,8 @@ export default function AboutUsSection({ hospitalName, onOpenBooking }) {
                   >
                     <div
                       className={`p-5 rounded-[2rem] transition-all duration-300 preserve-3d relative overflow-hidden border ${isSelected
-                          ? 'bg-white dark:bg-[#12283C] border-blue-400 dark:border-blue-500 shadow-[0_16px_36px_rgba(47,128,237,0.18)] translate-x-2'
-                          : 'bg-white/75 dark:bg-[#0D1E2E]/80 hover:bg-white border-gray-100 dark:border-gray-800 hover:border-blue-200'
+                        ? 'bg-white dark:bg-[#12283C] border-blue-400 dark:border-blue-500 shadow-[0_16px_36px_rgba(47,128,237,0.18)] translate-x-2'
+                        : 'bg-white/75 dark:bg-[#0D1E2E]/80 hover:bg-white border-gray-100 dark:border-gray-800 hover:border-blue-200'
                         }`}
                       style={{
                         transform: `perspective(1000px) translateZ(${isSelected ? 14 : 0}px)`,
@@ -453,8 +465,8 @@ export default function AboutUsSection({ hospitalName, onOpenBooking }) {
                         <div className="flex items-center gap-3.5">
                           <div
                             className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${isSelected
-                                ? 'text-white shadow-md'
-                                : 'bg-gray-100 dark:bg-[#152B3E] text-gray-500'
+                              ? 'text-white shadow-md'
+                              : 'bg-gray-100 dark:bg-[#152B3E] text-gray-500'
                               }`}
                             style={{
                               backgroundColor: isSelected ? pillar.accentColor : undefined,

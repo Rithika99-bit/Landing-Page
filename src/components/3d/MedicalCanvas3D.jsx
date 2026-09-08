@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { isReducedMotionPreferred, isTouchDevice } from '../../utils/animationTokens';
 
 export default function MedicalCanvas3D({ className = "" }) {
   const canvasRef = useRef(null);
@@ -8,27 +9,26 @@ export default function MedicalCanvas3D({ className = "" }) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Check prefers-reduced-motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReducedMotion = isReducedMotionPreferred();
+    const isTouch = isTouchDevice();
 
     // Scene setup
     const scene = new THREE.Scene();
 
-    // Camera setup
     const width = canvas.clientWidth || window.innerWidth;
     const height = canvas.clientHeight || window.innerHeight;
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
     camera.position.z = 18;
 
-    // Renderer setup
+    // Renderer setup with mobile optimization
     const renderer = new THREE.WebGLRenderer({
       canvas,
       alpha: true,
-      antialias: true,
-      powerPreference: 'high-performance',
+      antialias: !isTouch,
+      powerPreference: isTouch ? 'low-power' : 'high-performance',
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(isTouch ? 1 : Math.min(window.devicePixelRatio, 2));
 
     // Ambient & Directional Lights
     const ambientLight = new THREE.AmbientLight(0xdceeff, 1.8);
@@ -48,11 +48,12 @@ export default function MedicalCanvas3D({ className = "" }) {
 
     // 1. DNA Double Helix Structure
     const dnaGroup = new THREE.Group();
-    const numPairs = 28;
+    // Reduce geometry complexity on touch/mobile for smooth 60fps
+    const numPairs = isTouch ? 16 : 28;
     const helixRadius = 2.4;
     const helixLength = 14;
-    const rungGeometry = new THREE.CylinderGeometry(0.04, 0.04, helixRadius * 2, 8);
-    const nodeGeometry = new THREE.SphereGeometry(0.18, 16, 16);
+    const rungGeometry = new THREE.CylinderGeometry(0.04, 0.04, helixRadius * 2, isTouch ? 6 : 8);
+    const nodeGeometry = new THREE.SphereGeometry(0.18, isTouch ? 10 : 16, isTouch ? 10 : 16);
 
     const nodeMaterialA = new THREE.MeshStandardMaterial({
       color: 0x2f80ed,
@@ -86,17 +87,14 @@ export default function MedicalCanvas3D({ className = "" }) {
       const x2 = -x1;
       const z2 = -z1;
 
-      // Node A
       const nodeA = new THREE.Mesh(nodeGeometry, nodeMaterialA);
       nodeA.position.set(x1, y, z1);
       dnaGroup.add(nodeA);
 
-      // Node B
       const nodeB = new THREE.Mesh(nodeGeometry, nodeMaterialB);
       nodeB.position.set(x2, y, z2);
       dnaGroup.add(nodeB);
 
-      // Rung cylinder connecting A & B
       const rung = new THREE.Mesh(rungGeometry, rungMaterial);
       rung.position.set(0, y, 0);
       rung.rotation.z = Math.PI / 2;
@@ -110,8 +108,8 @@ export default function MedicalCanvas3D({ className = "" }) {
     dnaGroup.rotation.x = 0.2;
     medicalGroup.add(dnaGroup);
 
-    // 2. Floating Liquid Glass Crystalline Rings / Spheres
-    const ringGeometry = new THREE.TorusGeometry(3.4, 0.08, 16, 64);
+    // 2. Floating Liquid Glass Crystalline Rings
+    const ringGeometry = new THREE.TorusGeometry(3.4, 0.08, 12, isTouch ? 32 : 64);
     const ringMaterial = new THREE.MeshStandardMaterial({
       color: 0x2f80ed,
       roughness: 0.1,
@@ -125,21 +123,18 @@ export default function MedicalCanvas3D({ className = "" }) {
     medicalGroup.add(ring);
 
     // 3. Floating Ambient Medical Glow Particles
-    const particleCount = 80;
+    const particleCount = isTouch ? 30 : 70;
     const particleGeometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
-    const scales = new Float32Array(particleCount);
 
     for (let i = 0; i < particleCount; i++) {
       positions[i * 3] = (Math.random() - 0.5) * 30;
       positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
       positions[i * 3 + 2] = (Math.random() - 0.5) * 15;
-      scales[i] = Math.random() * 0.15 + 0.05;
     }
 
     particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-    // Particle sprite texture using canvas
     const pCanvas = document.createElement('canvas');
     pCanvas.width = 32;
     pCanvas.height = 32;
@@ -164,6 +159,13 @@ export default function MedicalCanvas3D({ className = "" }) {
     const particles = new THREE.Points(particleGeometry, particleMaterial);
     scene.add(particles);
 
+    // Scroll interaction: track scroll to shrink & rotate model smoothly
+    let currentScroll = 0;
+    const handleScroll = () => {
+      currentScroll = window.scrollY;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
     // Mouse Interaction
     let mouseX = 0;
     let mouseY = 0;
@@ -177,9 +179,10 @@ export default function MedicalCanvas3D({ className = "" }) {
       mouseY = (e.clientY - windowHalfY) / windowHalfY;
     };
 
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    if (!isTouch) {
+      window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    }
 
-    // Handle Resize
     const handleResize = () => {
       if (!canvas) return;
       const w = canvas.parentElement?.clientWidth || window.innerWidth;
@@ -202,24 +205,30 @@ export default function MedicalCanvas3D({ className = "" }) {
       const time = clock.getElapsedTime();
 
       if (!prefersReducedMotion) {
-        // Slow continuous rotation
-        dnaGroup.rotation.y += delta * 0.25;
-        ring.rotation.z += delta * 0.15;
+        // Continuous rotation speed adjusted by scroll
+        const scrollBoost = Math.min(2, 1 + currentScroll * 0.002);
+        dnaGroup.rotation.y += delta * 0.25 * scrollBoost;
+        ring.rotation.z += delta * 0.15 * scrollBoost;
         ring.rotation.y += delta * 0.1;
 
-        // Subtle vertical floating wave
-        dnaGroup.position.y = Math.sin(time * 0.8) * 0.4;
-        ring.position.y = Math.sin(time * 0.8) * 0.4;
+        // Vertical float
+        dnaGroup.position.y = Math.sin(time * 0.8) * 0.35;
+        ring.position.y = Math.sin(time * 0.8) * 0.35;
 
-        // Mouse Parallax Lerping
-        targetX += (mouseX * 0.8 - targetX) * 0.05;
-        targetY += (-mouseY * 0.6 - targetY) * 0.05;
+        // Scroll reactivity: model rotates and tilts as user scrolls down
+        const scrollOffset = Math.min(currentScroll * 0.0015, 0.6);
+        medicalGroup.rotation.z = scrollOffset * 0.4;
+        medicalGroup.position.z = -scrollOffset * 3;
 
-        medicalGroup.rotation.y = targetX * 0.4;
-        medicalGroup.rotation.x = targetY * 0.3;
+        // Mouse Parallax Lerping (desktop only)
+        if (!isTouch) {
+          targetX += (mouseX * 0.8 - targetX) * 0.05;
+          targetY += (-mouseY * 0.6 - targetY) * 0.05;
+          medicalGroup.rotation.y = targetX * 0.35;
+          medicalGroup.rotation.x = targetY * 0.25;
+        }
 
-        // Particle subtle drift
-        particles.rotation.y = time * 0.03;
+        particles.rotation.y = time * 0.02;
       }
 
       renderer.render(scene, camera);
@@ -227,10 +236,12 @@ export default function MedicalCanvas3D({ className = "" }) {
 
     animate();
 
-    // Clean up
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
+      if (!isTouch) {
+        window.removeEventListener('mousemove', handleMouseMove);
+      }
       window.removeEventListener('resize', handleResize);
       renderer.dispose();
       rungGeometry.dispose();

@@ -2,7 +2,6 @@ export const DEFAULT_HOSPITAL_NAME = "AETHERIA HEALTH";
 
 export const NAV_LINKS = [
   { name: "HOME", href: "#hero" },
-  { name: "ABOUT", href: "#about" },
   { name: "SERVICES", href: "#services" },
   { name: "DOCTORS", href: "#doctors" },
   { name: "CONTACT", href: "#contact" },

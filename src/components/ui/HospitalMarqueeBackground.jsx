@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 
 /**
  * HospitalMarqueeBackground:
- * Giant, high-visibility dual-lane background text scroller.
- * Moves continuously with marquee animation AND speeds up/shifts with page scrolling!
+ * Giant, ultra-soft luxury background text scroller with buttery-smooth GPU-accelerated motion.
+ * Uses decoupled parent-parallax & child-marquee architecture so scrolling and infinite drift never stutter.
  */
 export default function HospitalMarqueeBackground({
   hospitalName = "AETHERIA HEALTH",
@@ -11,96 +11,119 @@ export default function HospitalMarqueeBackground({
   showDualLane = true,
   className = "",
 }) {
-  const [scrollY, setScrollY] = useState(0);
+  const [scrollParallax, setScrollParallax] = useState(0);
+  const targetScrollRef = useRef(0);
+  const currentScrollRef = useRef(0);
+  const rafRef = useRef(null);
 
   useEffect(() => {
-    let ticking = false;
     const onScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setScrollY(window.scrollY);
-          ticking = false;
-        });
-        ticking = true;
-      }
+      targetScrollRef.current = window.scrollY;
     };
+
+    // Smooth lerp loop for silky scroll inertia (matches Lenis 60-120fps)
+    const updateMotion = () => {
+      const diff = targetScrollRef.current - currentScrollRef.current;
+      currentScrollRef.current += diff * 0.08;
+      setScrollParallax(currentScrollRef.current);
+      rafRef.current = requestAnimationFrame(updateMotion);
+    };
+
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    rafRef.current = requestAnimationFrame(updateMotion);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
+  const cleanHospitalName = hospitalName.replace(/[\[\]]/g, '').trim().toUpperCase();
+
   const topItems = [
-    `[ ${hospitalName.toUpperCase()} ]`,
+    cleanHospitalName,
     "ADVANCED ROBOTIC SURGERY",
     "GENOMIC DIGITAL TWIN",
-    `[ ${hospitalName.toUpperCase()} ]`,
+    cleanHospitalName,
     "SUB-CELLULAR AI DIAGNOSTICS",
     "24/7 EMERGENCY TRIAGE",
     "JCI GOLD EXCELLENCE",
   ];
 
   const bottomItems = [
-    "ACOUSTIC HEALING SANCTUARY",
-    "7-TESLA HIGH FIELD MRI",
+    "ACOUSTIC HEALING SUITES",
+    "7-TESLA PRECISION MRI",
     "WORLD-CLASS MEDICAL FACULTY",
     "ZERO-WAIT EMERGENCY INTAKE",
-    "100% PRIVATE HEALING SUITES",
+    "100% PRIVATE RECOVERY SUITES",
     "PRECISION GENE THERAPY",
   ];
 
   const repeatedTop = [...topItems, ...topItems, ...topItems];
   const repeatedBottom = [...bottomItems, ...bottomItems, ...bottomItems];
 
-  // Dynamic parallax offset based on scroll
-  const scrollOffsetTop = (scrollY * 0.35 * (reverse ? -1 : 1)) % 1000;
-  const scrollOffsetBottom = (scrollY * 0.35 * (reverse ? 1 : -1)) % 1000;
+  // Parallax translation applied to the PARENT layer (never conflicts with child CSS marquee)
+  const offsetTop = (scrollParallax * 0.22 * (reverse ? -1 : 1)) % 600;
+  const offsetBottom = (scrollParallax * 0.22 * (reverse ? 1 : -1)) % 600;
 
   return (
     <div
-      className={`pointer-events-none select-none absolute inset-0 overflow-hidden w-full h-full flex flex-col justify-center gap-6 sm:gap-10 z-0 ${className}`}
+      className={`pointer-events-none select-none absolute inset-0 overflow-hidden w-full h-full flex flex-col justify-center gap-6 sm:gap-12 z-0 ${className}`}
       aria-hidden="true"
     >
-      {/* Edge gradient masks */}
-      <div className="absolute inset-y-0 left-0 w-24 sm:w-48 bg-gradient-to-r from-[#F8FBFF] dark:from-[#07131E] to-transparent z-10 pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-24 sm:w-48 bg-gradient-to-l from-[#F8FBFF] dark:from-[#07131E] to-transparent z-10 pointer-events-none" />
+      {/* Soft edge gradient masks with mist-like gradual falloff */}
+      <div className="absolute inset-y-0 left-0 w-32 sm:w-64 bg-gradient-to-r from-[#F8FBFF] dark:from-[#080B1A] via-[#F8FBFF]/85 dark:via-[#080B1A]/85 to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-32 sm:w-64 bg-gradient-to-l from-[#F8FBFF] dark:from-[#080B1A] via-[#F8FBFF]/85 dark:via-[#080B1A]/85 to-transparent z-10 pointer-events-none" />
 
-      {/* Lane 1: Left-to-Right drift with scroll parallax */}
+      {/* Lane 1: Parent handles gentle scroll parallax, Child handles infinite 60fps marquee */}
       <div
-        className="flex whitespace-nowrap will-change-transform animate-marquee-slow"
+        className="w-full flex whitespace-nowrap overflow-visible will-change-transform"
         style={{
-          transform: `translateX(-${scrollOffsetTop}px)`,
-          transition: 'transform 0.05s linear',
+          transform: `translate3d(-${offsetTop}px, 0, 0)`,
         }}
       >
-        {repeatedTop.map((item, idx) => (
-          <span
-            key={`top-${idx}`}
-            className="inline-flex items-center gap-6 px-8 text-6xl sm:text-8xl md:text-9xl font-black tracking-[0.14em] uppercase stroke-text-medical leading-none font-display"
-          >
-            <span>{item}</span>
-            <span className="text-[#2F80ED]/70 text-3xl sm:text-5xl font-normal">✦</span>
-          </span>
-        ))}
+        <div className="flex whitespace-nowrap will-change-transform animate-marquee-slow">
+          {repeatedTop.map((item, idx) => {
+            const isName = item === cleanHospitalName;
+            return (
+              <span
+                key={`top-${idx}`}
+                className={`inline-flex items-center gap-6 sm:gap-8 px-6 sm:px-10 text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-wider uppercase font-display select-none leading-none ${
+                  isName ? 'soft-watermark-text font-extrabold' : 'soft-watermark-text opacity-85'
+                }`}
+              >
+                <span>{item}</span>
+                <span className="text-blue-400/40 dark:text-blue-300/30 text-2xl sm:text-4xl font-light">✦</span>
+              </span>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Lane 2: Right-to-Left drift with opposite scroll parallax */}
+      {/* Lane 2: Reverse drift with complementary cyan softness */}
       {showDualLane && (
         <div
-          className="flex whitespace-nowrap will-change-transform"
+          className="w-full flex whitespace-nowrap overflow-visible will-change-transform"
           style={{
-            transform: `translateX(${scrollOffsetBottom}px)`,
-            transition: 'transform 0.05s linear',
-            animation: 'marquee-scroll 50s linear infinite reverse',
+            transform: `translate3d(${offsetBottom}px, 0, 0)`,
           }}
         >
-          {repeatedBottom.map((item, idx) => (
-            <span
-              key={`bot-${idx}`}
-              className="inline-flex items-center gap-6 px-8 text-5xl sm:text-7xl md:text-8xl font-black tracking-[0.16em] uppercase stroke-text-medical-cyan leading-none font-display"
-            >
-              <span>{item}</span>
-              <span className="text-[#00C2CB]/70 text-2xl sm:text-4xl font-normal">✦</span>
-            </span>
-          ))}
+          <div
+            className="flex whitespace-nowrap will-change-transform"
+            style={{
+              animation: 'marquee-scroll 55s linear infinite reverse',
+            }}
+          >
+            {repeatedBottom.map((item, idx) => (
+              <span
+                key={`bot-${idx}`}
+                className="inline-flex items-center gap-6 sm:gap-8 px-6 sm:px-10 text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-wider uppercase font-display select-none leading-none soft-watermark-cyan opacity-80"
+              >
+                <span>{item}</span>
+                <span className="text-cyan-400/40 dark:text-cyan-300/30 text-xl sm:text-3xl font-light">✦</span>
+              </span>
+            ))}
+          </div>
         </div>
       )}
     </div>

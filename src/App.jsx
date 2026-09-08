@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './components/layout/Navbar';
 import HeroSection from './components/hero/HeroSection';
 import HoverBoardsSection from './components/services/HoverBoardsSection';
-import AboutUsSection from './components/about/AboutUsSection';
 import MajorServicesSection from './components/services/MajorServicesSection';
 import DoctorsSection from './components/doctors/DoctorsSection';
 import PatientJourneySection from './components/journey/PatientJourneySection';
@@ -15,18 +14,66 @@ import LoginPage from './components/auth/LoginPage';
 import HospitalTickerBanner from './components/ui/HospitalTickerBanner';
 import ScrollProgressBar from './components/ui/ScrollProgressBar';
 import KineticTextScroller from './components/ui/KineticTextScroller';
+import ScrollVitalsTicker from './components/ui/ScrollVitalsTicker';
+import MedicalScannerCursor from './components/ui/MedicalScannerCursor';
+import PersistentHealthWidget3D from './components/3d/PersistentHealthWidget3D';
+import AmbientBackgroundCanvas from './components/3d/AmbientBackgroundCanvas';
+import DataStreamDivider from './components/ui/DataStreamDivider';
+import PageLoadIntro from './components/ui/PageLoadIntro';
+import LiveECGDivider from './components/ui/LiveECGDivider';
+import AIHealthAssistantOrb from './components/ui/AIHealthAssistantOrb';
+import LiveVitalsTicker from './components/ui/LiveVitalsTicker';
+import NeuralTraceOverlay from './components/ui/NeuralTraceOverlay';
+import CursorSynapseTrail from './components/ui/CursorSynapseTrail';
+import BreathingCompanion from './components/ui/BreathingCompanion';
+import { useBackgroundTheme } from './store/useBackgroundTheme';
+import { useSmoothScroll } from './hooks/useSmoothScroll';
 
 import { Calendar } from 'lucide-react';
 import { DEFAULT_HOSPITAL_NAME } from './data/hospitalData';
 
-
 export default function App() {
+  // Activate GSAP + Lenis inertia scroll choreography site-wide
+  useSmoothScroll();
+
   const [currentView, setCurrentView] = useState('landing'); // 'landing' | 'login'
   const [theme, setTheme] = useState('light'); // 'light' | 'dark'
   const [hospitalName, setHospitalName] = useState(DEFAULT_HOSPITAL_NAME);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [selectedDoctorForBooking, setSelectedDoctorForBooking] = useState(null);
   const [selectedDoctorForProfile, setSelectedDoctorForProfile] = useState(null);
+
+  // Section-Reactive 3D Background Theme Driver
+  const setBgTheme = useBackgroundTheme((s) => s.setTheme);
+
+  useEffect(() => {
+    const handleScrollTheme = () => {
+      const height = window.innerHeight;
+      const heroEl = document.getElementById('hero');
+      const servicesEl = document.getElementById('services');
+      const doctorsEl = document.getElementById('doctors');
+      const ctaEl = document.getElementById('final-cta');
+
+      const isElementInView = (el) => {
+        if (!el) return false;
+        const rect = el.getBoundingClientRect();
+        return rect.top <= height * 0.55 && rect.bottom >= height * 0.25;
+      };
+
+      if (isElementInView(heroEl)) {
+        setBgTheme('hero');
+      } else if (isElementInView(servicesEl)) {
+        setBgTheme('cardiology');
+      } else if (isElementInView(doctorsEl)) {
+        setBgTheme('oncology');
+      } else if (isElementInView(ctaEl)) {
+        setBgTheme('emergency');
+      }
+    };
+
+    window.addEventListener('scroll', handleScrollTheme, { passive: true });
+    return () => window.removeEventListener('scroll', handleScrollTheme);
+  }, [setBgTheme]);
 
   // Sync dark class on root document
   useEffect(() => {
@@ -89,11 +136,35 @@ export default function App() {
 
   // Render Public Hospital Landing Page
   return (
-    <div className="min-h-screen bg-[#F8FBFF] text-[#0B2438] relative selection:bg-[#2F80ED]/20 selection:text-[#2F80ED]">
-      {/* Real-time Scroll Progress Bar & Telemetry HUD */}
+    <div className="min-h-screen bg-[#F8FBFF] text-[#0B2438] relative selection:bg-[#2F80ED]/20 selection:text-[#2F80ED] circuit-grid-bg">
+      {/* Persistent Full-Page 3D WebGL Background Layer */}
+      <AmbientBackgroundCanvas />
+
+      {/* Part 2: Ambient Soft-Updating Clinical Telemetry Strip */}
+      <LiveVitalsTicker />
+
+      {/* Part 2: Symptom -> Specialist Neural Light Trace Overlay */}
+      <NeuralTraceOverlay />
+
+      {/* Part 2: Localized Cursor Synapse Spark Trail */}
+      <CursorSynapseTrail />
+
+      {/* 0. Command Center Boot Sequence (1.5s skippable HUD reveal) */}
+      <PageLoadIntro />
+
+      {/* 1. Real-time Scroll Progress Bar & Telemetry HUD */}
       <ScrollProgressBar />
 
-      {/* 1. Floating Glass Navigation */}
+      {/* 2. Scroll-Linked Live Vitals Ticker Strip (Appears below Navbar when scrolling) */}
+      <ScrollVitalsTicker />
+
+      {/* 3. Non-touch Desktop Medical Scanner Target Cursor */}
+      <MedicalScannerCursor />
+
+      {/* 4. Scroll-Reactive Migrating 3D Health Status HUD Widget */}
+      <PersistentHealthWidget3D />
+
+      {/* 5. Floating Glass Navigation */}
       <Navbar
         hospitalName={hospitalName}
         onOpenBooking={() => handleOpenBooking()}
@@ -101,7 +172,7 @@ export default function App() {
         onChangeHospitalName={setHospitalName}
       />
 
-      {/* 2. Immersive Hero Section with 3D Medical Canvas & AI Doctor */}
+      {/* 6. Immersive Hero Section with 3D Medical Canvas & AI Doctor */}
       <HeroSection
         hospitalName={hospitalName}
         onOpenBooking={() => handleOpenBooking()}
@@ -112,7 +183,10 @@ export default function App() {
         hospitalName={hospitalName}
       />
 
-      {/* 3. 3D Interactive Hover Boards (6 Core Services) */}
+      {/* Section Transition Data Stream */}
+      <DataStreamDivider />
+
+      {/* 7. 3D Interactive Hover Boards (6 Core Services) */}
       <HoverBoardsSection
         hospitalName={hospitalName}
         onOpenBooking={() => handleOpenBooking()}
@@ -125,7 +199,7 @@ export default function App() {
         reverse={false}
         speed={1.2}
         items={[
-          `[ ${hospitalName.toUpperCase()} ]`,
+          hospitalName.toUpperCase(),
           "40+ CLINICAL SPECIALTIES",
           "✦",
           "SUB-MILLIMETER ROBOTIC SURGERY",
@@ -139,13 +213,12 @@ export default function App() {
         ]}
       />
 
-      {/* 4. Concise About Us & Why Choose Us */}
-      <AboutUsSection
-        hospitalName={hospitalName}
-        onOpenBooking={() => handleOpenBooking()}
-      />
 
-      {/* 5. Major Clinical Departments */}
+
+      {/* Continuous Live ECG Heartbeat Divider */}
+      <LiveECGDivider />
+
+      {/* 9. Major Clinical Departments */}
       <MajorServicesSection
         onOpenBooking={() => handleOpenBooking()}
       />
@@ -165,21 +238,24 @@ export default function App() {
           "✦",
           "100% PRIVATE ACOUSTIC SUITES",
           "✦",
-          `[ ${hospitalName.toUpperCase()} ]`,
+          hospitalName.toUpperCase(),
           "✦",
           "24/7 ADVANCED CLINICAL CARE",
           "✦",
         ]}
       />
 
-      {/* 6. AI-Generated Doctors Section with 3D Tilt & Profiles */}
+      {/* 10. AI-Generated Doctors Section with 3D Tilt & Profiles */}
       <DoctorsSection
         hospitalName={hospitalName}
         onViewProfile={handleOpenProfile}
         onOpenBooking={handleOpenBooking}
       />
 
-      {/* 7. Patient Journey Timeline */}
+      {/* Continuous Live ECG Heartbeat Divider */}
+      <LiveECGDivider />
+
+      {/* 11. Hero "Scrollytelling" Patient Journey Timeline (Pinned & Scrubbed) */}
       <PatientJourneySection
         onOpenBooking={() => handleOpenBooking()}
       />
@@ -199,25 +275,35 @@ export default function App() {
           "✦",
           "1:1 DEDICATED NURSE NAVIGATOR",
           "✦",
-          `[ ${hospitalName.toUpperCase()} ]`,
+          hospitalName.toUpperCase(),
           "✦",
         ]}
       />
 
-      {/* 8. Trust & Floating Statistics Section */}
+      {/* 12. Trust & Floating Statistics Section (Scroll-Triggered Counting) */}
       <TrustStatsSection />
 
+      {/* Section Transition Data Stream */}
+      <DataStreamDivider />
 
-      {/* 9. Final Appointment CTA */}
+      {/* 13. Final Appointment CTA with Rotational Parallax */}
       <FinalCtaSection
         hospitalName={hospitalName}
         onOpenBooking={() => handleOpenBooking()}
       />
 
-      {/* 10. Minimalist Luxury Footer */}
+      {/* 14. Minimalist Luxury Footer */}
       <Footer
         hospitalName={hospitalName}
       />
+
+      {/* 15. AI Health Assistant Living Orb & Clinical Copilot HUD */}
+      <AIHealthAssistantOrb
+        onOpenBooking={() => handleOpenBooking()}
+      />
+
+      {/* Part 2: Calm 4-7-8 Breathing Companion Widget */}
+      <BreathingCompanion />
 
       {/* Sticky Mobile Quick-Appointment Button */}
       <div className="md:hidden fixed bottom-5 inset-x-5 z-40 flex gap-2">

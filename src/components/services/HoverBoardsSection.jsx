@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Stethoscope,
@@ -7,14 +7,14 @@ import {
   Activity,
   ShieldAlert,
   CalendarCheck,
-  ArrowRight,
   Sparkles,
   CheckCircle2,
-  Clock,
   X,
   Calendar
 } from 'lucide-react';
 import HospitalMarqueeBackground from '../ui/HospitalMarqueeBackground';
+
+import { STAGGER_UNIT } from '../../utils/animationTokens';
 
 const CATEGORY_TABS = [
   { id: 'all', label: 'All Services', icon: Sparkles, count: 6 },
@@ -115,9 +115,10 @@ function FriendlyHoverBoardCard({ item, index, onSelectBoard }) {
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const [glare, setGlare] = useState({ x: 50, y: 50, opacity: 0 });
   const [isHovered, setIsHovered] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
 
   const handleMouseMove = (e) => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || isFlipped) return;
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -141,6 +142,7 @@ function FriendlyHoverBoardCard({ item, index, onSelectBoard }) {
 
   const handleMouseLeave = () => {
     setIsHovered(false);
+    setIsFlipped(false);
     setRotate({ x: 0, y: 0 });
     setGlare({ x: 50, y: 50, opacity: 0 });
   };
@@ -154,105 +156,159 @@ function FriendlyHoverBoardCard({ item, index, onSelectBoard }) {
       initial={{ opacity: 0, scale: 0.9, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9, y: -20 }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
+      transition={{ duration: 0.45, delay: index * STAGGER_UNIT, ease: [0.16, 1, 0.3, 1] }}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={() => onSelectBoard(item)}
       className="perspective-1000 cursor-pointer select-none group relative"
-      style={{ minHeight: '275px' }}
+      style={{ minHeight: '290px' }}
     >
       <div
-        className="w-full h-full rounded-[2rem] p-6 transition-all duration-300 preserve-3d flex flex-col justify-between relative overflow-hidden border"
+        className="w-full h-full rounded-[2rem] transition-all duration-500 preserve-3d relative"
         style={{
-          transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) translateZ(${isHovered ? 12 : 0}px)`,
-          boxShadow: isHovered
-            ? `0 25px 50px -12px ${item.accentGlow}, 0 0 0 1.5px ${item.borderColor}`
-            : '0 12px 30px 0 rgba(11, 36, 56, 0.04), 0 0 0 1px rgba(255, 255, 255, 0.9)',
-          background: isHovered
-            ? 'linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 250, 255, 0.92) 100%)'
-            : 'rgba(255, 255, 255, 0.82)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
+          transform: `perspective(1000px) rotateY(${isFlipped ? 180 : rotate.y}deg) rotateX(${isFlipped ? 0 : rotate.x}deg) translateZ(${isHovered ? 12 : 0}px)`,
         }}
       >
-        {/* Dynamic Light Sweep Shimmer Animation on Hover */}
-        <div className="pointer-events-none absolute inset-0 w-full h-full overflow-hidden rounded-[2rem]">
-          <div className="w-[140%] h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-1000 ease-out" />
-        </div>
-
-        {/* Dynamic Glass Reflection Glare */}
+        {/* FRONT FACE OF CARD */}
         <div
-          className="pointer-events-none absolute inset-0 transition-opacity duration-300 rounded-[2rem]"
+          onClick={() => onSelectBoard(item)}
+          className={`w-full h-full rounded-[2rem] p-6 backface-hidden flex flex-col justify-between relative overflow-hidden border transition-all duration-300 ${
+            isHovered
+              ? 'bg-gradient-to-br from-white/95 to-blue-50/90 dark:from-[#0E2236] dark:to-[#0B1E30]'
+              : 'bg-white/85 dark:bg-[#0D1E2E]/80 border-gray-100 dark:border-gray-800 shadow-sm'
+          }`}
           style={{
-            opacity: glare.opacity,
-            background: `radial-gradient(circle 200px at ${glare.x}% ${glare.y}%, rgba(255, 255, 255, 0.7) 0%, transparent 80%)`,
+            boxShadow: isHovered
+              ? `0 25px 50px -12px ${item.accentGlow}, 0 0 0 1.5px ${item.borderColor}`
+              : '0 12px 30px 0 rgba(11, 36, 56, 0.04), 0 0 0 1px rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
           }}
-        />
-
-        {/* Ambient Corner Aura Glow */}
-        <div
-          className={`absolute -top-12 -right-12 w-32 h-32 rounded-full bg-gradient-to-br ${item.gradient} blur-2xl transition-all duration-500 ${isHovered ? 'opacity-35 scale-125' : 'opacity-10 scale-100'
-            }`}
-        />
-
-        {/* Top Header Row with translateZ(32px) */}
-        <div
-          className="flex items-center justify-between relative z-10 mb-2"
-          style={{ transform: 'translateZ(32px)' }}
         >
-          {/* Icon with hover bounce */}
+          {/* Dynamic Light Sweep Shimmer Animation on Hover */}
+          <div className="pointer-events-none absolute inset-0 w-full h-full overflow-hidden rounded-[2rem]">
+            <div className="w-[140%] h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-1000 ease-out" />
+          </div>
+
+          {/* Dynamic Glass Reflection Glare */}
           <div
-            className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${isHovered
-                ? `bg-gradient-to-tr ${item.gradient} text-white shadow-md scale-110 rotate-3`
-                : 'bg-blue-50 text-[#2F80ED]'
+            className="pointer-events-none absolute inset-0 transition-opacity duration-300 rounded-[2rem]"
+            style={{
+              opacity: glare.opacity,
+              background: `radial-gradient(circle 200px at ${glare.x}% ${glare.y}%, rgba(255, 255, 255, 0.7) 0%, transparent 80%)`,
+            }}
+          />
+
+          {/* Ambient Corner Aura Glow */}
+          <div
+            className={`absolute -top-12 -right-12 w-32 h-32 rounded-full bg-gradient-to-br ${item.gradient} blur-2xl transition-all duration-500 ${
+              isHovered ? 'opacity-35 scale-125' : 'opacity-10 scale-100'
+            }`}
+          />
+
+          {/* Top Header Row */}
+          <div className="flex items-center justify-between relative z-10 mb-2">
+            <div
+              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+                isHovered
+                  ? `bg-gradient-to-tr ${item.gradient} text-white shadow-md scale-110 rotate-3`
+                  : 'bg-blue-50 text-[#2F80ED]'
               }`}
-          >
-            <IconComponent className="w-5 h-5" />
+            >
+              <IconComponent className="w-5 h-5" />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-[#2F80ED] bg-blue-50/90 border border-blue-100 px-2.5 py-1 rounded-full shadow-xs">
+                {item.tag}
+              </span>
+              <span className="font-mono text-2xl font-black text-slate-200 group-hover:text-[#2F80ED] transition-colors duration-300">
+                {item.number}
+              </span>
+            </div>
           </div>
 
-          {/* Number & Friendly Tag Pill */}
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-[#2F80ED] bg-blue-50/90 border border-blue-100 px-2.5 py-1 rounded-full shadow-xs">
-              {item.tag}
+          {/* Middle Content */}
+          <div className="my-2 relative z-10 flex-1 flex flex-col justify-center">
+            <h3 className="font-display text-xl font-bold text-[#0B2438] dark:text-white mb-1.5 tracking-tight group-hover:text-[#2F80ED] transition-colors">
+              {item.title}
+            </h3>
+            <p className="text-xs text-[#4A6278] dark:text-gray-400 leading-relaxed font-normal">
+              {item.plainText}
+            </p>
+          </div>
+
+          {/* Bottom Key Benefit & Action Row */}
+          <div className="pt-3 border-t border-slate-100 dark:border-gray-800 flex items-center justify-between relative z-10">
+            <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800 px-3 py-1 rounded-full inline-flex items-center gap-1.5 shadow-xs">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              {item.benefit}
             </span>
-            <span className="font-mono text-2xl font-black text-slate-200 group-hover:text-[#2F80ED] transition-colors duration-300">
-              {item.number}
-            </span>
+
+            {/* Interactive Hologram Flip Trigger */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFlipped(true);
+              }}
+              className="text-[11px] font-mono font-bold text-cyan-600 dark:text-cyan-400 hover:text-blue-600 px-2 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/50 border border-cyan-200/60 transition-colors flex items-center gap-1"
+            >
+              <span>Hologram</span>
+              <Sparkles className="w-3 h-3" />
+            </button>
           </div>
         </div>
 
-        {/* Middle Content with translateZ(22px) */}
+        {/* BACK FACE: HOLOGRAPHIC SCI-FI DATA MATRIX */}
         <div
-          className="my-2 relative z-10 flex-1 flex flex-col justify-center"
-          style={{ transform: 'translateZ(22px)' }}
+          onClick={() => setIsFlipped(false)}
+          className="absolute inset-0 w-full h-full rounded-[2rem] p-6 backface-hidden bg-[#080B1A]/95 text-white border border-cyan-400/50 shadow-[0_25px_60px_rgba(0,240,255,0.3)] flex flex-col justify-between overflow-hidden"
+          style={{
+            transform: 'rotateY(180deg)',
+          }}
         >
-          <h3 className="font-display text-xl font-bold text-[#0B2438] mb-1.5 tracking-tight group-hover:text-[#2F80ED] transition-colors">
-            {item.title}
-          </h3>
-          <p className="text-xs text-[#4A6278] leading-relaxed font-normal">
-            {item.plainText}
-          </p>
-        </div>
+          {/* Faint particle grid background */}
+          <div className="absolute inset-0 circuit-grid-bg opacity-30 pointer-events-none" />
 
-        {/* Bottom Key Benefit & Action Row with translateZ(30px) */}
-        <div
-          className="pt-3 border-t border-slate-100 flex items-center justify-between relative z-10"
-          style={{ transform: 'translateZ(30px)' }}
-        >
-          {/* Quick Clear Patient Benefit with Live Pulsing Indicator */}
-          <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-3 py-1 rounded-full inline-flex items-center gap-1.5 shadow-xs">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+          {/* Header */}
+          <div className="flex items-center justify-between relative z-10">
+            <span className="font-mono text-[10px] font-extrabold text-[#00F0FF] tracking-widest uppercase">
+              HOLOGRAPHIC SPEC // #{item.number}
             </span>
-            {item.benefit}
-          </span>
+            <span className="w-2 h-2 rounded-full bg-[#00F0FF] animate-pulse" />
+          </div>
 
-          {/* Clean Action */}
-          <div className="flex items-center gap-1 text-xs font-bold text-[#2F80ED] group-hover:translate-x-1 transition-transform">
-            <span>Learn More</span>
-            <ArrowRight className="w-3 h-3" />
+          {/* Hologram Middle Spec Details */}
+          <div className="my-2 relative z-10 space-y-2">
+            <h4 className="font-mono text-lg font-black text-white">
+              {item.title} // TELEMETRY
+            </h4>
+            <p className="text-xs text-cyan-200/90 leading-relaxed">
+              {item.plainText} Enhanced with real-time biometric tracking and algorithmic verification.
+            </p>
+            <div className="p-2.5 rounded-xl bg-cyan-950/60 border border-cyan-500/30 flex items-center justify-between text-[11px] font-mono">
+              <span className="text-gray-400">STATUS:</span>
+              <span className="text-[#00F0FF] font-bold">ONLINE · VERIFIED</span>
+            </div>
+          </div>
+
+          {/* Flip Return Action */}
+          <div className="pt-2 border-t border-cyan-500/30 flex items-center justify-between relative z-10">
+            <span className="text-[10px] font-mono text-gray-400">
+              Click to return
+            </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectBoard(item);
+              }}
+              className="px-3 py-1.5 rounded-xl bg-[#00F0FF] text-[#080B1A] font-mono text-xs font-black shadow-md hover:bg-white transition-colors"
+            >
+              Examine Protocol
+            </button>
           </div>
         </div>
 
@@ -261,9 +317,23 @@ function FriendlyHoverBoardCard({ item, index, onSelectBoard }) {
   );
 }
 
+const ROTATING_WORDS = [
+  { text: 'Simplified', gradient: 'from-[#2F80ED] via-[#1E6FD9] to-[#00C2CB]', glow: 'rgba(47, 128, 237, 0.28)' },
+  { text: 'Comfortable', gradient: 'from-[#00C2CB] via-[#0284C7] to-[#2F80ED]', glow: 'rgba(0, 194, 203, 0.28)' },
+  { text: 'Effortless', gradient: 'from-[#6366F1] via-[#2F80ED] to-[#00C2CB]', glow: 'rgba(99, 102, 241, 0.28)' },
+];
+
 export default function HoverBoardsSection({ hospitalName, onOpenBooking }) {
   const [selectedBoard, setSelectedBoard] = useState(null);
   const [activeTab, setActiveTab] = useState('all');
+  const [wordIndex, setWordIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % ROTATING_WORDS.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
 
   const filteredBoards = activeTab === 'all'
     ? USER_FRIENDLY_BOARDS
@@ -283,20 +353,113 @@ export default function HoverBoardsSection({ hospitalName, onOpenBooking }) {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/60 text-xs font-bold text-[#2F80ED] uppercase tracking-wider mb-3 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>HOW WE CARE FOR YOU</span>
-          </div>
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-[#0B2438] tracking-tight mb-3">
-            Healthcare Made{' '}
-            <span className="bg-gradient-to-r from-[#2F80ED] via-[#1E6FD9] to-[#00C2CB] bg-clip-text text-transparent">
-              Simple & Comfortable
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          {/* Animated Category Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50/90 border border-blue-200/70 text-xs font-bold text-[#2F80ED] uppercase tracking-wider mb-4 shadow-sm backdrop-blur-sm"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2F80ED] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#2F80ED]"></span>
             </span>
-          </h2>
-          <p className="text-xs sm:text-sm text-[#4A6278] leading-relaxed">
+            <Sparkles className="w-3.5 h-3.5 text-[#2F80ED]" />
+            <span>HOW WE CARE FOR YOU</span>
+          </motion.div>
+
+          {/* Shortened, Premium Animated Headline */}
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-[#0B2438] tracking-tight mb-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-2"
+          >
+            <span>Healthcare,</span>
+            <button
+              type="button"
+              onClick={() => setWordIndex((prev) => (prev + 1) % ROTATING_WORDS.length)}
+              className="relative inline-flex items-center justify-center min-w-[200px] sm:min-w-[270px] lg:min-w-[310px] text-center cursor-pointer select-none group focus:outline-none"
+              title="Click to switch word"
+            >
+              {/* Dynamic glowing aura backdrop */}
+              <motion.span
+                animate={{
+                  boxShadow: `0 0 50px 14px ${ROTATING_WORDS[wordIndex].glow}`,
+                }}
+                transition={{ duration: 0.7 }}
+                className="absolute inset-0 rounded-full pointer-events-none opacity-60"
+              />
+
+              {/* 3D Perspective Word Flip Animation */}
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={ROTATING_WORDS[wordIndex].text}
+                  initial={{ opacity: 0, y: 20, filter: 'blur(8px)', rotateX: -30 }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)', rotateX: 0 }}
+                  exit={{ opacity: 0, y: -20, filter: 'blur(8px)', rotateX: 30 }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  className={`inline-block font-black bg-gradient-to-r ${ROTATING_WORDS[wordIndex].gradient} bg-clip-text text-transparent group-hover:scale-[1.03] transition-transform duration-200`}
+                >
+                  {ROTATING_WORDS[wordIndex].text}
+                </motion.span>
+              </AnimatePresence>
+
+              {/* Animated SVG Swoop Underline Flourish */}
+              <svg
+                className="absolute -bottom-1 sm:-bottom-2 left-1/2 -translate-x-1/2 w-4/5 max-w-[240px] h-3 overflow-visible pointer-events-none"
+                viewBox="0 0 240 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <motion.path
+                  d="M4 8C60 2 180 2 236 8"
+                  stroke="url(#swoop-gradient)"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  key={wordIndex}
+                  transition={{ duration: 0.6, ease: 'easeOut' }}
+                />
+                <defs>
+                  <linearGradient id="swoop-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#2F80ED" />
+                    <stop offset="50%" stopColor="#00C2CB" />
+                    <stop offset="100%" stopColor="#1E6FD9" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </button>
+          </motion.h2>
+
+          {/* Interactive Word Indicator Pills */}
+          <div className="flex items-center justify-center gap-1.5 mb-3">
+            {ROTATING_WORDS.map((item, idx) => (
+              <button
+                key={item.text}
+                onClick={() => setWordIndex(idx)}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  idx === wordIndex
+                    ? 'w-6 bg-[#2F80ED] shadow-[0_0_8px_rgba(47,128,237,0.5)]'
+                    : 'w-1.5 bg-blue-200/80 hover:bg-blue-300'
+                }`}
+                aria-label={`Switch to ${item.text}`}
+              />
+            ))}
+          </div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-xs sm:text-sm text-[#4A6278] leading-relaxed max-w-xl mx-auto"
+          >
             Everything you need for your health in one place. Select a category below or explore our innovative care services.
-          </p>
+          </motion.p>
         </div>
 
         {/* Animated Interactive Tabs with Fluid Floating Pill */}

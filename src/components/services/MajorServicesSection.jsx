@@ -19,6 +19,7 @@ import {
   Cpu
 } from 'lucide-react';
 import HospitalMarqueeBackground from '../ui/HospitalMarqueeBackground';
+import { STAGGER_UNIT } from '../../utils/animationTokens';
 
 const ICON_MAP = {
 
@@ -224,7 +225,7 @@ function FuturisticServiceCard({ service, index, onOpenDetails }) {
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.1, duration: 0.6 }}
+      transition={{ delay: index * STAGGER_UNIT, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -275,8 +276,8 @@ function FuturisticServiceCard({ service, index, onOpenDetails }) {
           {/* Floating Department Icon */}
           <div
             className={`w-13 h-13 p-3.5 rounded-2xl flex items-center justify-center transition-all duration-300 ${isHovered
-                ? `bg-gradient-to-tr ${theme.color} text-white shadow-lg scale-110 rotate-3`
-                : 'bg-blue-50/90 text-[#2F80ED] shadow-sm'
+              ? `bg-gradient-to-tr ${theme.color} text-white shadow-lg scale-110 rotate-3`
+              : 'bg-blue-50/90 text-[#2F80ED] shadow-sm'
               }`}
           >
             <IconComponent className="w-6 h-6" />
@@ -376,9 +377,15 @@ export default function MajorServicesSection({ onOpenBooking }) {
               <Sparkles className="w-3.5 h-3.5 text-[#2F80ED]" />
               <span>SPECIALIZED CLINICAL HUBS</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0B2438] tracking-tight">
+            <motion.h2
+              initial={{ opacity: 0, y: 30, clipPath: 'inset(100% 0% 0% 0%)' }}
+              whileInView={{ opacity: 1, y: 0, clipPath: 'inset(0% 0% 0% 0%)' }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0B2438] tracking-tight"
+            >
               Major Clinical Services
-            </h2>
+            </motion.h2>
           </div>
           <p className="text-xs sm:text-sm text-[#4A6278] max-w-md leading-relaxed">
             Proprietary sub-specialty centers equipped with real-time AI telemetry, 7-Tesla diagnostic imaging, and robotic surgical suites.
@@ -392,8 +399,8 @@ export default function MajorServicesSection({ onOpenBooking }) {
               key={cat}
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 border ${activeCategory === cat
-                  ? 'bg-[#2F80ED] text-white border-[#2F80ED] shadow-md shadow-blue-500/20 scale-[1.02]'
-                  : 'bg-white text-[#4A6278] border-gray-200 hover:border-blue-300 hover:text-[#0B2438]'
+                ? 'bg-[#2F80ED] text-white border-[#2F80ED] shadow-md shadow-blue-500/20 scale-[1.02]'
+                : 'bg-white text-[#4A6278] border-gray-200 hover:border-blue-300 hover:text-[#0B2438]'
                 }`}
             >
               {cat}

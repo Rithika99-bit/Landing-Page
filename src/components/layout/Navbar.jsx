@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NAV_LINKS } from '../../data/hospitalData';
-import { Menu, X, Calendar, Activity, Sparkles, ChevronRight } from 'lucide-react';
+import { Menu, X, Calendar, Activity, ChevronRight, Volume2, VolumeX } from 'lucide-react';
+import { audioManager } from '../../utils/audioManager';
 
 export default function Navbar({ hospitalName, onOpenBooking, onOpenLogin, onChangeHospitalName }) {
   const [scrolled, setScrolled] = useState(false);
@@ -8,6 +9,11 @@ export default function Navbar({ hospitalName, onOpenBooking, onOpenLogin, onCha
   const [activeSection, setActiveSection] = useState('hero');
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState(hospitalName);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+
+  useEffect(() => {
+    return audioManager.subscribe((enabled) => setAudioEnabled(enabled));
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,12 +49,13 @@ export default function Navbar({ hospitalName, onOpenBooking, onOpenLogin, onCha
     <header className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8 pt-4 transition-all duration-300">
       <div className="max-w-7xl mx-auto">
         <nav
-          className={`relative flex items-center justify-between px-5 sm:px-7 py-3.5 rounded-full transition-all duration-300 ${
-            scrolled
-              ? 'bg-white/80 backdrop-blur-xl border border-white/90 shadow-[0_12px_40px_rgba(11,36,56,0.08)]'
-              : 'bg-white/60 backdrop-blur-md border border-white/70 shadow-[0_8px_30px_rgba(11,36,56,0.04)]'
-          }`}
+          className={`relative flex items-center justify-between px-5 sm:px-7 py-3.5 rounded-full transition-all duration-300 ${scrolled
+              ? 'bg-white/85 dark:bg-[#080B1A]/90 backdrop-blur-xl border border-cyan-400/30 shadow-[0_12px_40px_rgba(0,240,255,0.1)]'
+              : 'bg-white/70 dark:bg-[#080B1A]/75 backdrop-blur-md border border-cyan-400/20 shadow-[0_8px_30px_rgba(11,36,56,0.04)]'
+            }`}
         >
+          {/* Animated Cyan/Violet HUD Charging Border */}
+          <div className="absolute inset-0 rounded-full p-[1.5px] bg-gradient-to-r from-[#00F0FF] via-[#7B5CFA] to-[#00F0FF] hud-charging-border pointer-events-none opacity-40 shadow-[0_0_15px_rgba(0,240,255,0.25)]" />
           {/* Brand Logo & Name */}
           <a
             href="#hero"
@@ -102,11 +109,10 @@ export default function Navbar({ hospitalName, onOpenBooking, onOpenLogin, onCha
                 <a
                   key={link.name}
                   href={link.href}
-                  className={`relative px-4 py-1.5 text-xs lg:text-sm font-semibold tracking-wide rounded-full transition-all duration-200 ${
-                    isActive
+                  className={`relative px-4 py-1.5 text-xs lg:text-sm font-semibold tracking-wide rounded-full transition-all duration-200 ${isActive
                       ? 'text-[#2F80ED] bg-blue-50/80 font-bold'
                       : 'text-[#4A6278] hover:text-[#0B2438] hover:bg-white/60'
-                  }`}
+                    }`}
                 >
                   {link.name}
                   {isActive && (
@@ -117,8 +123,31 @@ export default function Navbar({ hospitalName, onOpenBooking, onOpenLogin, onCha
             })}
           </div>
 
-          {/* Right CTA Buttons: PORTAL LOGIN + BOOK APPOINTMENT */}
+          {/* Right CTA Buttons: AUDIO TOGGLE + PORTAL LOGIN + BOOK APPOINTMENT */}
           <div className="hidden md:flex items-center gap-2.5">
+            {/* Ambient ECG Heartbeat Audio Opt-in Toggle */}
+            <button
+              onClick={() => audioManager.toggle()}
+              title={audioEnabled ? "Mute ambient ECG audio" : "Enable subtle ambient ECG audio (opt-in)"}
+              className={`p-2 rounded-full transition-all duration-200 border flex items-center gap-1.5 text-xs font-bold ${
+                audioEnabled
+                  ? 'bg-emerald-50 text-emerald-600 border-emerald-300 shadow-sm'
+                  : 'bg-white/80 text-gray-400 hover:text-gray-600 border-gray-200/80'
+              }`}
+            >
+              {audioEnabled ? (
+                <>
+                  <Volume2 className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
+                  <span className="text-[10px] text-emerald-600">ECG ON</span>
+                </>
+              ) : (
+                <>
+                  <VolumeX className="w-3.5 h-3.5" />
+                  <span className="text-[10px]">ECG OFF</span>
+                </>
+              )}
+            </button>
+
             <button
               onClick={onOpenLogin}
               className="px-4 py-2 text-xs font-bold tracking-wide text-[#2F80ED] hover:text-blue-700 bg-blue-50/90 hover:bg-blue-100 rounded-full transition-all duration-200 border border-blue-200/60"
