@@ -147,7 +147,6 @@ export default function App() {
 
       {/* 5. Major Clinical Departments */}
       <MajorServicesSection
-        hospitalName={hospitalName}
         onOpenBooking={() => handleOpenBooking()}
       />
 
@@ -182,7 +181,6 @@ export default function App() {
 
       {/* 7. Patient Journey Timeline */}
       <PatientJourneySection
-        hospitalName={hospitalName}
         onOpenBooking={() => handleOpenBooking()}
       />
 

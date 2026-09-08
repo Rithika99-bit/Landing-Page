@@ -6,11 +6,11 @@ import HospitalMarqueeBackground from '../ui/HospitalMarqueeBackground';
 export default function FinalCtaSection({ hospitalName }) {
   return (
     <section id="contact" className="relative py-24 lg:py-36 overflow-hidden bg-white">
-      {/* Background Ambient Aura & Grid */}
-      <div className="pointer-events-none absolute inset-0 medical-mesh-bg opacity-70" />
-
       {/* Background Text Scroller */}
       <HospitalMarqueeBackground hospitalName={hospitalName} reverse={true} />
+
+      {/* Background Ambient Aura & Grid */}
+      <div className="pointer-events-none absolute inset-0 medical-mesh-bg opacity-70" />
 
 
       {/* Subtle Animated 3D Floating Medical Cross & Rings in background */}

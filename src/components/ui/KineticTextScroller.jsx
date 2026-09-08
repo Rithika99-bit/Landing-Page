@@ -51,9 +51,8 @@ export default function KineticTextScroller({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full overflow-hidden py-4 sm:py-5 border-y border-blue-100/90 dark:border-blue-900/60 bg-gradient-to-r from-blue-50/95 via-white to-blue-50/95 dark:from-[#0B1E32]/95 dark:via-[#0E243A] dark:to-[#0B1E32]/95 backdrop-blur-xl shadow-[0_4px_24px_rgba(47,128,237,0.08)] select-none z-20 ${
-        variant === "angled" ? "-rotate-1 sm:-rotate-1.5 my-8 scale-105" : ""
-      } ${className}`}
+      className={`relative w-full overflow-hidden py-4 sm:py-5 border-y border-blue-100/90 dark:border-blue-900/60 bg-gradient-to-r from-blue-50/95 via-white to-blue-50/95 dark:from-[#0B1E32]/95 dark:via-[#0E243A] dark:to-[#0B1E32]/95 backdrop-blur-xl shadow-[0_4px_24px_rgba(47,128,237,0.08)] select-none z-20 ${variant === "angled" ? "-rotate-1 sm:-rotate-1.5 my-8 scale-105" : ""
+        } ${className}`}
       aria-hidden="true"
     >
       {/* Edge gradient fade masks */}
@@ -64,9 +63,8 @@ export default function KineticTextScroller({
         <div
           className="flex items-center whitespace-nowrap py-1 group hover:[animation-play-state:paused]"
           style={{
-            animation: `ticker-slide ${reverse ? 38 : 34}s linear infinite ${
-              reverse ? "reverse" : "normal"
-            }`,
+            animation: `ticker-slide ${reverse ? 38 : 34}s linear infinite ${reverse ? "reverse" : "normal"
+              }`,
           }}
         >
           {repeatedItems.map((item, index) => {
@@ -88,7 +86,7 @@ export default function KineticTextScroller({
                   className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#2F80ED]/15 dark:bg-[#2F80ED]/25 border border-[#2F80ED]/30 mx-3 shadow-sm"
                 >
                   <span className="w-2 h-2 rounded-full bg-[#2F80ED] animate-ping" />
-                  <span className="font-unbounded text-xs sm:text-sm font-black tracking-widest text-[#1E6FD9] dark:text-blue-300 uppercase">
+                  <span className="font-mono text-xs sm:text-sm font-black tracking-widest text-[#1E6FD9] dark:text-blue-300 uppercase">
                     {item}
                   </span>
                 </span>
@@ -98,7 +96,7 @@ export default function KineticTextScroller({
             return (
               <span
                 key={index}
-                className="font-display font-bold text-xs sm:text-sm tracking-[0.16em] text-[#0B2438] dark:text-slate-200 uppercase px-3"
+                className="font-display font-extrabold text-xs sm:text-sm tracking-[0.16em] text-[#0B2438] dark:text-slate-200 uppercase px-3"
               >
                 {item}
               </span>

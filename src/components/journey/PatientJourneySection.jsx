@@ -86,10 +86,10 @@ function Journey3DCard({ step, idx, isActive, onClick, onHover }) {
     >
       <div
         className={`w-full h-full rounded-[2rem] p-6 transition-all duration-300 preserve-3d flex flex-col justify-between relative overflow-hidden border ${isActive
-            ? 'bg-gradient-to-b from-white via-blue-50/70 to-white dark:from-[#0E2236] dark:via-[#132E4A] dark:to-[#0E2236] border-[#2F80ED] dark:border-[#3B82F6] shadow-[0_25px_50px_-12px_rgba(47,128,237,0.3),0_0_0_2px_rgba(47,128,237,0.3)]'
-            : isHovered
-              ? 'bg-white/95 dark:bg-[#112538] border-blue-300 dark:border-blue-700 shadow-xl'
-              : 'bg-white/75 dark:bg-[#0D1E2E]/80 border-gray-100 dark:border-gray-800 shadow-sm'
+          ? 'bg-gradient-to-b from-white via-blue-50/70 to-white dark:from-[#0E2236] dark:via-[#132E4A] dark:to-[#0E2236] border-[#2F80ED] dark:border-[#3B82F6] shadow-[0_25px_50px_-12px_rgba(47,128,237,0.3),0_0_0_2px_rgba(47,128,237,0.3)]'
+          : isHovered
+            ? 'bg-white/95 dark:bg-[#112538] border-blue-300 dark:border-blue-700 shadow-xl'
+            : 'bg-white/75 dark:bg-[#0D1E2E]/80 border-gray-100 dark:border-gray-800 shadow-sm'
           }`}
         style={{
           transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) translateZ(${isActive ? 16 : isHovered ? 10 : 0
@@ -121,10 +121,10 @@ function Journey3DCard({ step, idx, isActive, onClick, onHover }) {
           {/* Luminous 3D Floating Icon Box */}
           <div
             className={`w-13 h-13 p-3.5 rounded-2xl flex items-center justify-center transition-all duration-300 ${isActive
-                ? 'bg-gradient-to-tr from-[#2F80ED] to-[#00C2CB] text-white shadow-[0_8px_25px_rgba(47,128,237,0.4)] scale-110 rotate-1'
-                : isHovered
-                  ? 'bg-blue-500 text-white shadow-md'
-                  : 'bg-blue-50 dark:bg-[#152C42] text-[#2F80ED] dark:text-[#3B82F6]'
+              ? 'bg-gradient-to-tr from-[#2F80ED] to-[#00C2CB] text-white shadow-[0_8px_25px_rgba(47,128,237,0.4)] scale-110 rotate-1'
+              : isHovered
+                ? 'bg-blue-500 text-white shadow-md'
+                : 'bg-blue-50 dark:bg-[#152C42] text-[#2F80ED] dark:text-[#3B82F6]'
               }`}
           >
             <Icon className={`w-6 h-6 transition-transform duration-300 ${isActive ? 'scale-110 animate-pulse' : ''}`} />
@@ -145,8 +145,8 @@ function Journey3DCard({ step, idx, isActive, onClick, onHover }) {
           <div className="mb-2">
             <span
               className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full inline-flex items-center gap-1 border ${isActive
-                  ? 'bg-blue-100/80 dark:bg-blue-900/50 text-[#2F80ED] dark:text-blue-300 border-blue-300/50'
-                  : 'bg-gray-100/80 dark:bg-gray-800 text-[#4A6278] dark:text-gray-300 border-transparent'
+                ? 'bg-blue-100/80 dark:bg-blue-900/50 text-[#2F80ED] dark:text-blue-300 border-blue-300/50'
+                : 'bg-gray-100/80 dark:bg-gray-800 text-[#4A6278] dark:text-gray-300 border-transparent'
                 }`}
             >
               <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-[#2F80ED] animate-ping' : 'bg-gray-400'}`} />
@@ -202,7 +202,7 @@ function Journey3DCard({ step, idx, isActive, onClick, onHover }) {
   );
 }
 
-export default function PatientJourneySection({ hospitalName, onOpenBooking }) {
+export default function PatientJourneySection({ onOpenBooking }) {
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
 
@@ -221,7 +221,7 @@ export default function PatientJourneySection({ hospitalName, onOpenBooking }) {
   return (
     <section id="journey" className="relative py-24 lg:py-36 bg-gradient-to-b from-[#F8FBFF] via-white to-[#F8FBFF] dark:from-[#07131E] dark:via-[#091B2C] dark:to-[#07131E] overflow-hidden transition-colors duration-300">
       {/* Background Text Scroller */}
-      <HospitalMarqueeBackground hospitalName={hospitalName} reverse={false} />
+      <HospitalMarqueeBackground reverse={false} />
 
       {/* Dynamic 3D Ambient Medical Orbs in Background */}
 
@@ -305,10 +305,10 @@ export default function PatientJourneySection({ hospitalName, onOpenBooking }) {
                 >
                   <div
                     className={`w-9 h-9 rounded-full flex items-center justify-center font-mono font-bold text-xs transition-all duration-300 border-2 ${isCurrent
-                        ? 'bg-[#2F80ED] text-white border-white dark:border-[#07131E] shadow-[0_0_20px_#2F80ED] scale-125'
-                        : isPastOrActive
-                          ? 'bg-emerald-500 text-white border-white dark:border-[#07131E] scale-100'
-                          : 'bg-white dark:bg-[#122538] text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-blue-400'
+                      ? 'bg-[#2F80ED] text-white border-white dark:border-[#07131E] shadow-[0_0_20px_#2F80ED] scale-125'
+                      : isPastOrActive
+                        ? 'bg-emerald-500 text-white border-white dark:border-[#07131E] scale-100'
+                        : 'bg-white dark:bg-[#122538] text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-blue-400'
                       }`}
                   >
                     {isPastOrActive && !isCurrent ? (
