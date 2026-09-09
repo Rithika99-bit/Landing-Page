@@ -8,6 +8,9 @@ import {
 } from 'lucide-react';
 import { DOCTORS_DATA } from '../../data/hospitalData';
 import { audioManager } from '../../utils/audioManager';
+import { createPortal } from 'react-dom';
+import { useModalScrollLock } from '../../hooks/useModalScrollLock';
+import AppointmentModalCanvas from '../3d/AppointmentModalCanvas';
 
 const SPECIALITY_FACULTIES = [
   {
@@ -100,30 +103,31 @@ export default function AppointmentModal({ isOpen, onClose, preselectedDoctor, h
     }
   }, [preselectedDoctor]);
 
-  if (!isOpen) return null;
-
-  const selectedDocObj = DOCTORS_DATA.find((d) => d.id === formData.doctorId) || DOCTORS_DATA[0];
-
   const handleNext = (e) => {
-    if (e) e.preventDefault();
-    if (step === 1) {
-      audioManager.playHeartbeat(0.1);
-      setStep(2);
-    } else if (step === 2) {
-      audioManager.playHeartbeat(0.1);
-      setStep(3);
-    } else if (step === 3) {
-      audioManager.playHeartbeat(0.1);
-      setStep(4);
-    } else if (step === 4) {
-      if (!formData.patientName || !formData.patientEmail) {
-        alert('Please provide your name and email to proceed.');
-        return;
+    if (e && e.preventDefault) e.preventDefault();
+    try {
+      if (step === 1) {
+        try { audioManager.playHeartbeat(0.1); } catch {}
+        setStep(2);
+      } else if (step === 2) {
+        try { audioManager.playHeartbeat(0.1); } catch {}
+        setStep(3);
+      } else if (step === 3) {
+        try { audioManager.playHeartbeat(0.1); } catch {}
+        setStep(4);
+      } else if (step === 4) {
+        if (!formData.patientName?.trim() || !formData.patientEmail?.trim()) {
+          alert('Please provide your name and email to proceed.');
+          return;
+        }
+        const randomPassId = `ATH-${Math.floor(100000 + Math.random() * 900000)}`;
+        setAppointmentId(randomPassId);
+        try { audioManager.playConfirmation(0.12); } catch {}
+        setStep(5);
       }
-      const randomPassId = `ATH-${Math.floor(100000 + Math.random() * 900000)}`;
-      setAppointmentId(randomPassId);
-      audioManager.playConfirmation(0.12);
-      setStep(5);
+    } catch (err) {
+      console.error('Error in handleNext:', err);
+      setStep((prev) => Math.min(5, prev + 1));
     }
   };
 
@@ -136,18 +140,34 @@ export default function AppointmentModal({ isOpen, onClose, preselectedDoctor, h
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#0B2438]/60 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl rounded-2xl sm:rounded-3xl bg-white shadow-2xl border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-200">
+  useModalScrollLock(isOpen, handleReset);
 
-        {/* Modal Top Header (Matching Image) */}
-        <div className="px-6 sm:px-8 pt-6 pb-4 border-b border-gray-100">
+  if (!isOpen) return null;
+
+  const selectedDocObj = DOCTORS_DATA.find((d) => d.id === formData.doctorId) || DOCTORS_DATA[0];
+
+  const modalContent = (
+    <div
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-3 sm:p-4 bg-[#081524]/80 backdrop-blur-md animate-in fade-in duration-200"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) handleReset();
+      }}
+    >
+      <div
+        className="relative w-full max-w-4xl max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl bg-[#081322]/95 text-white shadow-[0_25px_60px_rgba(0,0,0,0.8),0_0_40px_rgba(0,240,255,0.2)] border border-cyan-500/30 overflow-hidden animate-in zoom-in-95 duration-200"
+        data-lenis-prevent
+      >
+        {/* 3D Medical Particle Glow Canvas Backdrop (User Requested Custom Texture Glow & DNA Canvas) */}
+        <AppointmentModalCanvas />
+
+        {/* Modal Top Header (Sticky) */}
+        <div className="px-6 sm:px-8 pt-6 pb-4 border-b border-cyan-500/20 shrink-0 sticky top-0 z-20 bg-[#081322]/90 backdrop-blur-xl">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <span className="text-[11px] font-mono font-bold text-emerald-600 tracking-wider uppercase block mb-1">
+              <span className="text-[11px] font-mono font-bold text-cyan-400 tracking-wider uppercase block mb-1">
                 STEP 0{step} OF 05
               </span>
-              <h3 className="text-lg sm:text-2xl font-black text-[#0B2438] tracking-tight uppercase">
+              <h3 className="text-lg sm:text-2xl font-black text-white tracking-tight uppercase">
                 {step === 1 && 'SELECT SPECIALITY FACULTY'}
                 {step === 2 && 'SELECT SPECIALIST DOCTOR'}
                 {step === 3 && 'SELECT DATE & TIME SLOT'}
@@ -156,37 +176,43 @@ export default function AppointmentModal({ isOpen, onClose, preselectedDoctor, h
               </h3>
             </div>
 
-            <div className="flex items-center gap-4 shrink-0">
-              <span className="hidden sm:inline-block text-xs font-mono font-bold tracking-widest text-[#4A6278] uppercase">
+            <div className="flex items-center gap-3 shrink-0">
+              <span className="hidden sm:inline-block text-xs font-mono font-bold tracking-widest text-cyan-300/80 uppercase">
                 SMART SCHEDULER
               </span>
               <button
+                type="button"
                 onClick={handleReset}
-                className="w-8 h-8 rounded-lg bg-[#0B2438] hover:bg-black text-white flex items-center justify-center transition-colors shadow-sm"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-red-500/20 text-gray-300 hover:text-white transition-colors border border-white/10 text-xs font-bold cursor-pointer group"
                 aria-label="Close scheduler"
+                title="Close (Esc)"
               >
-                <X className="w-4 h-4" />
+                <span className="hidden sm:inline">Close</span>
+                <X className="w-4 h-4 group-hover:rotate-90 transition-transform" />
               </button>
             </div>
           </div>
 
-          {/* 5-Step Indicator Bars */}
+          {/* 5-Step Indicator Bars (Clickable Step Navigation) */}
           <div className="grid grid-cols-5 gap-2 mt-4">
             {[1, 2, 3, 4, 5].map((s) => (
-              <div
+              <button
                 key={s}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  s <= step ? 'bg-[#0B2438]' : 'bg-gray-200'
+                type="button"
+                onClick={() => setStep(s)}
+                className={`h-2 rounded-full transition-all duration-300 cursor-pointer outline-none ${
+                  s <= step ? 'bg-gradient-to-r from-[#00F0FF] to-[#2F80ED] shadow-[0_0_10px_#00F0FF]' : 'bg-gray-800 hover:bg-gray-700'
                 }`}
+                title={`Go to Step 0${s}`}
               />
             ))}
           </div>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 sm:p-8">
+        <div className="p-6 sm:p-8 overflow-y-auto flex-1 overscroll-contain relative z-10" data-lenis-prevent>
 
-          {/* STEP 1: Select Speciality Faculty (Exact Image Match + User-friendly Doctor Descriptions) */}
+          {/* STEP 1: Select Speciality Faculty */}
           {step === 1 && (
             <div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 mb-6 max-h-[56vh] overflow-y-auto pr-1">
@@ -200,23 +226,23 @@ export default function AppointmentModal({ isOpen, onClose, preselectedDoctor, h
                         setSelectedFacultyId(fac.id);
                         setFormData((prev) => ({ ...prev, department: fac.title }));
                       }}
-                      className={`w-full text-left p-4 rounded-xl border transition-all duration-200 relative flex items-center justify-between gap-3 cursor-pointer outline-none ${
+                      className={`w-full text-left p-4 rounded-xl border transition-all duration-200 relative flex items-center justify-between gap-3 cursor-pointer outline-none backdrop-blur-md ${
                         isSelected
-                          ? 'bg-[#0B2438] text-white border-[#0B2438] shadow-md'
-                          : 'bg-white hover:bg-blue-50/40 border-gray-200/90 text-[#0B2438] hover:border-[#2F80ED] hover:shadow-sm'
+                          ? 'bg-[#0B2438] text-white border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.25)]'
+                          : 'bg-white/90 dark:bg-[#0E1B2E]/80 hover:bg-white dark:hover:bg-[#13253F] border-gray-200/90 dark:border-cyan-500/20 text-[#0B2438] dark:text-white hover:border-cyan-400 hover:shadow-sm'
                       }`}
                     >
                       <div className="space-y-1 pr-2">
                         <h4
                           className={`text-xs sm:text-sm font-extrabold tracking-tight uppercase ${
-                            isSelected ? 'text-white' : 'text-[#0B2438]'
+                            isSelected ? 'text-white' : 'text-[#0B2438] dark:text-white'
                           }`}
                         >
                           {fac.title}
                         </h4>
                         <p
                           className={`text-[11px] sm:text-xs leading-relaxed ${
-                            isSelected ? 'text-gray-300 font-medium' : 'text-[#5A7184]'
+                            isSelected ? 'text-cyan-200 font-medium' : 'text-[#5A7184] dark:text-gray-300'
                           }`}
                         >
                           {fac.doctorRole}
@@ -237,7 +263,7 @@ export default function AppointmentModal({ isOpen, onClose, preselectedDoctor, h
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="px-6 sm:px-7 py-3 rounded-lg text-xs font-bold text-white bg-[#0B2438] hover:bg-black transition-all shadow-md flex items-center gap-2 uppercase tracking-wider cursor-pointer"
+                  className="px-6 sm:px-7 py-3 rounded-lg text-xs font-bold text-[#081322] bg-gradient-to-r from-[#00F0FF] to-[#2F80ED] hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,240,255,0.3)] flex items-center gap-2 uppercase tracking-wider cursor-pointer font-mono relative z-30"
                 >
                   <span>CONTINUE TO STEP 02</span>
                   <span className="font-bold">&gt;</span>
@@ -592,4 +618,6 @@ export default function AppointmentModal({ isOpen, onClose, preselectedDoctor, h
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : null;
 }

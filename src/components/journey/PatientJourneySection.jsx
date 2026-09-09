@@ -151,13 +151,12 @@ export default function PatientJourneySection({ onOpenBooking }) {
                   title={`Jump to Phase ${s.step}: ${s.title}`}
                 >
                   <div
-                    className={`w-9 h-9 rounded-full flex items-center justify-center font-mono font-bold text-xs transition-all duration-300 border-2 ${
-                      isCurrent
+                    className={`w-9 h-9 rounded-full flex items-center justify-center font-mono font-bold text-xs transition-all duration-300 border-2 ${isCurrent
                         ? 'bg-[#2F80ED] text-white border-white dark:border-[#07131E] shadow-[0_0_20px_#2F80ED] scale-110'
                         : isPastOrActive
-                        ? 'bg-emerald-500 text-white border-white dark:border-[#07131E] scale-100'
-                        : 'bg-white dark:bg-[#122538] text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-blue-400'
-                    }`}
+                          ? 'bg-emerald-500 text-white border-white dark:border-[#07131E] scale-100'
+                          : 'bg-white dark:bg-[#122538] text-gray-400 border-gray-200 dark:border-gray-700 group-hover:border-blue-400'
+                      }`}
                   >
                     {isPastOrActive && !isCurrent ? (
                       <Check className="w-4 h-4 stroke-[3]" />
@@ -165,14 +164,12 @@ export default function PatientJourneySection({ onOpenBooking }) {
                       s.step
                     )}
                   </div>
-                  <span className={`text-[11px] font-bold mt-2 transition-colors ${
-                    isCurrent ? 'text-[#2F80ED] dark:text-blue-400 font-extrabold' : 'text-gray-400'
-                  }`}>
+                  <span className={`text-[11px] font-bold mt-2 transition-colors ${isCurrent ? 'text-[#2F80ED] dark:text-blue-400 font-extrabold' : 'text-gray-400'
+                    }`}>
                     Phase {s.step}
                   </span>
-                  <span className={`text-[10px] hidden md:block max-w-[105px] text-center truncate ${
-                    isCurrent ? 'text-[#0B2438] dark:text-white font-bold' : 'text-gray-400'
-                  }`}>
+                  <span className={`text-[10px] hidden md:block max-w-[105px] text-center truncate ${isCurrent ? 'text-[#0B2438] dark:text-white font-bold' : 'text-gray-400'
+                    }`}>
                     {s.title}
                   </span>
                 </button>

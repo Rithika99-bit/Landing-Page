@@ -6,6 +6,7 @@ import MajorServicesSection from './components/services/MajorServicesSection';
 import DoctorsSection from './components/doctors/DoctorsSection';
 import PatientJourneySection from './components/journey/PatientJourneySection';
 import TrustStatsSection from './components/stats/TrustStatsSection';
+import PatientReviewsSection from './components/reviews/PatientReviewsSection';
 import FinalCtaSection from './components/cta/FinalCtaSection';
 import Footer from './components/layout/Footer';
 import AppointmentModal from './components/modals/AppointmentModal';
@@ -282,6 +283,15 @@ export default function App() {
 
       {/* 12. Trust & Floating Statistics Section (Scroll-Triggered Counting) */}
       <TrustStatsSection />
+
+      {/* Section Transition Data Stream */}
+      <DataStreamDivider />
+
+      {/* 12.5. Patient Reviews Scrolling Boards Section */}
+      <PatientReviewsSection
+        hospitalName={hospitalName}
+        onOpenBooking={() => handleOpenBooking()}
+      />
 
       {/* Section Transition Data Stream */}
       <DataStreamDivider />

@@ -2,7 +2,12 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { isReducedMotionPreferred, isTouchDevice } from '../../utils/animationTokens';
 
-export default function MedicalCanvas3D({ className = "" }) {
+/**
+ * AppointmentModalCanvas:
+ * Embedded 3D ambient medical particle & floating DNA helix background canvas
+ * rendered directly inside the Book Appointment wizard modal.
+ */
+export default function AppointmentModalCanvas({ className = "" }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -12,15 +17,15 @@ export default function MedicalCanvas3D({ className = "" }) {
     const prefersReducedMotion = isReducedMotionPreferred();
     const isTouch = isTouchDevice();
 
-    // Scene setup
+    // 1. Scene & Camera Setup
     const scene = new THREE.Scene();
+    const width = canvas.parentElement?.clientWidth || canvas.clientWidth || window.innerWidth;
+    const height = canvas.parentElement?.clientHeight || canvas.clientHeight || window.innerHeight;
 
-    const width = canvas.clientWidth || window.innerWidth;
-    const height = canvas.clientHeight || window.innerHeight;
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.z = 18;
+    camera.position.z = 16;
 
-    // Renderer setup with mobile optimization
+    // 2. Renderer Setup
     const renderer = new THREE.WebGLRenderer({
       canvas,
       alpha: true,
@@ -30,7 +35,7 @@ export default function MedicalCanvas3D({ className = "" }) {
     renderer.setSize(width, height);
     renderer.setPixelRatio(isTouch ? 1 : Math.min(window.devicePixelRatio, 2));
 
-    // Ambient & Directional Lights
+    // 3. Lighting
     const ambientLight = new THREE.AmbientLight(0xdceeff, 1.8);
     scene.add(ambientLight);
 
@@ -42,45 +47,45 @@ export default function MedicalCanvas3D({ className = "" }) {
     rimLight.position.set(-10, -10, -8);
     scene.add(rimLight);
 
-    // Group for all medical structures
-    const medicalGroup = new THREE.Group();
-    scene.add(medicalGroup);
+    // Main 3D Group
+    const modalGroup = new THREE.Group();
+    scene.add(modalGroup);
 
-    // 1. DNA Double Helix Structure
+    // 4. Subtle Ambient Floating DNA Helix Strand
     const dnaGroup = new THREE.Group();
-    // Reduce geometry complexity on touch/mobile for smooth 60fps
-    const numPairs = isTouch ? 16 : 28;
-    const helixRadius = 2.4;
-    const helixLength = 14;
-    const rungGeometry = new THREE.CylinderGeometry(0.04, 0.04, helixRadius * 2, isTouch ? 6 : 8);
-    const nodeGeometry = new THREE.SphereGeometry(0.18, isTouch ? 10 : 16, isTouch ? 10 : 16);
+    const numPairs = isTouch ? 12 : 20;
+    const helixRadius = 2.0;
+    const helixLength = 12;
+
+    const rungGeometry = new THREE.CylinderGeometry(0.035, 0.035, helixRadius * 2, 8);
+    const nodeGeometry = new THREE.SphereGeometry(0.15, 12, 12);
 
     const nodeMaterialA = new THREE.MeshStandardMaterial({
       color: 0x2f80ed,
       roughness: 0.2,
-      metalness: 0.3,
+      metalness: 0.4,
       transparent: true,
-      opacity: 0.88,
+      opacity: 0.65,
     });
 
     const nodeMaterialB = new THREE.MeshStandardMaterial({
       color: 0x00c2cb,
       roughness: 0.2,
-      metalness: 0.3,
+      metalness: 0.4,
       transparent: true,
-      opacity: 0.88,
+      opacity: 0.65,
     });
 
     const rungMaterial = new THREE.MeshStandardMaterial({
       color: 0xe2edff,
       roughness: 0.4,
-      metalness: 0.1,
+      metalness: 0.2,
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.45,
     });
 
     for (let i = 0; i < numPairs; i++) {
-      const t = (i / numPairs) * Math.PI * 4;
+      const t = (i / numPairs) * Math.PI * 3.5;
       const y = (i / numPairs) * helixLength - helixLength / 2;
       const x1 = Math.cos(t) * helixRadius;
       const z1 = Math.sin(t) * helixRadius;
@@ -102,67 +107,61 @@ export default function MedicalCanvas3D({ className = "" }) {
       dnaGroup.add(rung);
     }
 
-    dnaGroup.position.set(3.8, 0, -1.0);
-    dnaGroup.scale.set(1.15, 1.15, 1.15);
-    dnaGroup.rotation.z = 0.35;
-    dnaGroup.rotation.x = 0.2;
-    medicalGroup.add(dnaGroup);
+    dnaGroup.position.set(4.2, -1, -2.5);
+    dnaGroup.scale.set(0.9, 0.9, 0.9);
+    dnaGroup.rotation.z = 0.3;
+    modalGroup.add(dnaGroup);
 
-    // 2. Floating Ambient Medical Glow Particles
-    const particleCount = isTouch ? 30 : 70;
+    // 5. Custom Glow Particle Canvas Texture & Points System (As Highlighted by User)
+    const particleCount = isTouch ? 40 : 85;
     const particleGeometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
 
     for (let i = 0; i < particleCount; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 30;
+      positions[i * 3] = (Math.random() - 0.5) * 28;
       positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
       positions[i * 3 + 2] = (Math.random() - 0.5) * 15;
     }
 
     particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
+    // Dynamic 2D Radial Gradient Texture Creation for Soft Glowing Orbs
     const pCanvas = document.createElement('canvas');
     pCanvas.width = 32;
     pCanvas.height = 32;
     const pCtx = pCanvas.getContext('2d');
     const pGrad = pCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
-    pGrad.addColorStop(0, 'rgba(47, 128, 237, 0.9)');
-    pGrad.addColorStop(0.5, 'rgba(0, 194, 203, 0.3)');
+    pGrad.addColorStop(0, 'rgba(47, 128, 237, 0.95)');
+    pGrad.addColorStop(0.45, 'rgba(0, 194, 203, 0.4)');
     pGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
     pCtx.fillStyle = pGrad;
     pCtx.fillRect(0, 0, 32, 32);
 
     const pTexture = new THREE.CanvasTexture(pCanvas);
     const particleMaterial = new THREE.PointsMaterial({
-      size: 0.4,
+      size: 0.5,
       map: pTexture,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.75,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
 
     const particles = new THREE.Points(particleGeometry, particleMaterial);
-    scene.add(particles);
+    modalGroup.add(particles);
 
-    // Scroll interaction: track scroll to shrink & rotate model smoothly
-    let currentScroll = 0;
-    const handleScroll = () => {
-      currentScroll = window.scrollY;
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    // Mouse Interaction
+    // 6. Interactive Mouse Parallax inside Modal
     let mouseX = 0;
     let mouseY = 0;
     let targetX = 0;
     let targetY = 0;
 
     const handleMouseMove = (e) => {
-      const windowHalfX = window.innerWidth / 2;
-      const windowHalfY = window.innerHeight / 2;
-      mouseX = (e.clientX - windowHalfX) / windowHalfX;
-      mouseY = (e.clientY - windowHalfY) / windowHalfY;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      mouseX = (x / rect.width - 0.5) * 2;
+      mouseY = (y / rect.height - 0.5) * 2;
     };
 
     if (!isTouch) {
@@ -170,9 +169,9 @@ export default function MedicalCanvas3D({ className = "" }) {
     }
 
     const handleResize = () => {
-      if (!canvas) return;
-      const w = canvas.parentElement?.clientWidth || window.innerWidth;
-      const h = canvas.parentElement?.clientHeight || window.innerHeight;
+      if (!canvas || !canvas.parentElement) return;
+      const w = canvas.parentElement.clientWidth;
+      const h = canvas.parentElement.clientHeight;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
@@ -180,7 +179,7 @@ export default function MedicalCanvas3D({ className = "" }) {
 
     window.addEventListener('resize', handleResize);
 
-    // Animation Loop
+    // 7. Animation Loop
     let animationFrameId;
     let clock = new THREE.Clock();
 
@@ -191,27 +190,21 @@ export default function MedicalCanvas3D({ className = "" }) {
       const time = clock.getElapsedTime();
 
       if (!prefersReducedMotion) {
-        // Continuous rotation speed adjusted by scroll
-        const scrollBoost = Math.min(2, 1 + currentScroll * 0.002);
-        dnaGroup.rotation.y += delta * 0.25 * scrollBoost;
+        // Continuous gentle DNA helix rotation
+        dnaGroup.rotation.y += delta * 0.3;
+        dnaGroup.position.y = -1 + Math.sin(time * 0.9) * 0.25;
 
-        // Vertical float
-        dnaGroup.position.y = Math.sin(time * 0.8) * 0.35;
+        // Particle field rotation & floating
+        particles.rotation.y = time * 0.03;
+        particles.rotation.x = Math.sin(time * 0.02) * 0.05;
 
-        // Scroll reactivity: model rotates and tilts as user scrolls down
-        const scrollOffset = Math.min(currentScroll * 0.0015, 0.6);
-        medicalGroup.rotation.z = scrollOffset * 0.4;
-        medicalGroup.position.z = -scrollOffset * 3;
-
-        // Mouse Parallax Lerping (desktop only)
+        // Smooth mouse lerping inside modal
         if (!isTouch) {
-          targetX += (mouseX * 0.8 - targetX) * 0.05;
-          targetY += (-mouseY * 0.6 - targetY) * 0.05;
-          medicalGroup.rotation.y = targetX * 0.35;
-          medicalGroup.rotation.x = targetY * 0.25;
+          targetX += (mouseX * 0.6 - targetX) * 0.05;
+          targetY += (-mouseY * 0.4 - targetY) * 0.05;
+          modalGroup.rotation.y = targetX * 0.25;
+          modalGroup.rotation.x = targetY * 0.18;
         }
-
-        particles.rotation.y = time * 0.02;
       }
 
       renderer.render(scene, camera);
@@ -221,7 +214,6 @@ export default function MedicalCanvas3D({ className = "" }) {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('scroll', handleScroll);
       if (!isTouch) {
         window.removeEventListener('mousemove', handleMouseMove);
       }
@@ -241,8 +233,8 @@ export default function MedicalCanvas3D({ className = "" }) {
   return (
     <canvas
       ref={canvasRef}
-      className={`absolute inset-0 w-full h-full pointer-events-none ${className}`}
-      style={{ opacity: 1.0 }}
+      className={`absolute inset-0 w-full h-full pointer-events-none select-none z-0 ${className}`}
+      style={{ opacity: 0.9 }}
     />
   );
 }

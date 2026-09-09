@@ -28,6 +28,7 @@ export function useSmoothScroll() {
     });
 
     lenisRef.current = lenis;
+    window.__lenis = lenis;
 
     // Connect Lenis scroll event to GSAP ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
@@ -44,6 +45,7 @@ export function useSmoothScroll() {
       gsap.ticker.remove(tickerCallback);
       lenis.destroy();
       lenisRef.current = null;
+      delete window.__lenis;
     };
   }, []);
 

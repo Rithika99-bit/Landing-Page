@@ -1,20 +1,35 @@
 import React from 'react';
 import { X, Calendar, Star, Award, GraduationCap, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { useModalScrollLock } from '../../hooks/useModalScrollLock';
 
 export default function DoctorProfileModal({ doctor, isOpen, onClose, onBookDoctor }) {
+  useModalScrollLock(isOpen, onClose);
+
   if (!isOpen || !doctor) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B2438]/50 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl rounded-3xl bg-white/95 backdrop-blur-2xl border border-white shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+  const modalContent = (
+    <div
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-3 sm:p-4 bg-[#081524]/80 backdrop-blur-md animate-in fade-in duration-200"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white/95 backdrop-blur-2xl border border-white shadow-2xl animate-in zoom-in-95 duration-200"
+        data-lenis-prevent
+      >
         
         {/* Close button */}
         <button
+          type="button"
           onClick={onClose}
-          className="absolute top-5 right-5 z-20 w-9 h-9 rounded-full bg-white/80 hover:bg-white text-gray-500 hover:text-gray-800 flex items-center justify-center shadow-md transition-colors"
+          className="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200/80 shadow-sm transition-all text-xs font-bold cursor-pointer group"
           aria-label="Close"
+          title="Close (Esc)"
         >
-          <X className="w-5 h-5" />
+          <span className="hidden sm:inline">Close</span>
+          <X className="w-4 h-4 group-hover:rotate-90 transition-transform" />
         </button>
 
         <div className="grid grid-cols-1 md:grid-cols-12">
@@ -115,4 +130,6 @@ export default function DoctorProfileModal({ doctor, isOpen, onClose, onBookDoct
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : null;
 }

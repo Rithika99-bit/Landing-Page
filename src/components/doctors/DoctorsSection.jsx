@@ -118,9 +118,9 @@ export default function DoctorsSection({ hospitalName, onViewProfile, onOpenBook
   const filteredDoctors = selectedFilter === 'all'
     ? DOCTORS_DATA
     : DOCTORS_DATA.filter((doc) => {
-        const filterObj = SPECIALTY_FILTERS.find((f) => f.id === selectedFilter);
-        return filterObj ? doc.specialty === filterObj.match : true;
-      });
+      const filterObj = SPECIALTY_FILTERS.find((f) => f.id === selectedFilter);
+      return filterObj ? doc.specialty === filterObj.match : true;
+    });
 
   // Active doctor
   const currentDoctor = DOCTORS_DATA.find((doc) => doc.id === selectedDoctorId) || filteredDoctors[0] || DOCTORS_DATA[0];
@@ -189,11 +189,10 @@ export default function DoctorsSection({ hospitalName, onViewProfile, onOpenBook
                   role="tab"
                   aria-selected={isActive}
                   onClick={() => handleFilterSelect(tab.id)}
-                  className={`relative px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
-                    isActive
+                  className={`relative px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${isActive
                       ? 'text-white shadow-sm'
                       : 'text-[#4A6278] dark:text-gray-400 hover:text-[#0B2438] dark:hover:text-white bg-white/70 dark:bg-white/5 border border-gray-200/60 dark:border-gray-800'
-                  }`}
+                    }`}
                 >
                   {isActive && (
                     <motion.span
@@ -432,16 +431,14 @@ export default function DoctorsSection({ hospitalName, onViewProfile, onOpenBook
                   setSelectedDoctorId(doctor.id);
                   setShowDetails(false);
                 }}
-                className={`group flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-200 border text-left ${
-                  isSelected
+                className={`group flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-200 border text-left ${isSelected
                     ? 'bg-white dark:bg-[#0E2236] border-[#2F80ED] dark:border-cyan-400 shadow-[0_4px_14px_rgba(47,128,237,0.25)]'
                     : 'bg-white/60 dark:bg-white/5 border-gray-200/70 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700'
-                }`}
+                  }`}
                 aria-pressed={isSelected}
               >
-                <div className={`relative w-8 h-8 rounded-full overflow-hidden shrink-0 border ${
-                  isSelected ? 'border-[#2F80ED] dark:border-cyan-400 ring-2 ring-[#2F80ED]/20' : 'border-gray-200'
-                }`}>
+                <div className={`relative w-8 h-8 rounded-full overflow-hidden shrink-0 border ${isSelected ? 'border-[#2F80ED] dark:border-cyan-400 ring-2 ring-[#2F80ED]/20' : 'border-gray-200'
+                  }`}>
                   <img
                     src={doctor.image}
                     alt={doctor.name}
@@ -453,9 +450,8 @@ export default function DoctorsSection({ hospitalName, onViewProfile, onOpenBook
                 </div>
 
                 <div className="flex flex-col">
-                  <span className={`text-xs font-bold leading-tight ${
-                    isSelected ? 'text-[#0B2438] dark:text-cyan-300' : 'text-gray-600 dark:text-gray-400 group-hover:text-[#0B2438] dark:group-hover:text-white'
-                  }`}>
+                  <span className={`text-xs font-bold leading-tight ${isSelected ? 'text-[#0B2438] dark:text-cyan-300' : 'text-gray-600 dark:text-gray-400 group-hover:text-[#0B2438] dark:group-hover:text-white'
+                    }`}>
                     {firstName}
                   </span>
                   <span className="text-[10px] text-gray-400 dark:text-gray-500 line-clamp-1">

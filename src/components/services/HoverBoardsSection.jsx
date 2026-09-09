@@ -10,10 +10,14 @@ import {
   Sparkles,
   CheckCircle2,
   X,
-  Calendar
+  Calendar,
+  Play,
+  Pause,
+  ArrowLeftRight,
+  LayoutGrid,
+  Columns3
 } from 'lucide-react';
 import HospitalMarqueeBackground from '../ui/HospitalMarqueeBackground';
-
 import { STAGGER_UNIT } from '../../utils/animationTokens';
 
 const CATEGORY_TABS = [
@@ -34,8 +38,8 @@ const USER_FRIENDLY_BOARDS = [
     patientPill: "Verified Specialists",
     icon: Stethoscope,
     gradient: "from-blue-500 to-indigo-600",
-    accentGlow: "rgba(47, 128, 237, 0.25)",
-    borderColor: "rgba(47, 128, 237, 0.3)",
+    accentGlow: "rgba(47, 128, 237, 0.28)",
+    borderColor: "rgba(47, 128, 237, 0.35)",
     tag: "Care You Can Trust"
   },
   {
@@ -48,8 +52,8 @@ const USER_FRIENDLY_BOARDS = [
     patientPill: "Robotic Surgery",
     icon: Zap,
     gradient: "from-cyan-500 to-blue-600",
-    accentGlow: "rgba(0, 194, 203, 0.25)",
-    borderColor: "rgba(0, 194, 203, 0.3)",
+    accentGlow: "rgba(0, 194, 203, 0.28)",
+    borderColor: "rgba(0, 194, 203, 0.35)",
     tag: "Gentle & Precise"
   },
   {
@@ -62,8 +66,8 @@ const USER_FRIENDLY_BOARDS = [
     patientPill: "Personal Roadmap",
     icon: HeartHandshake,
     gradient: "from-emerald-500 to-teal-600",
-    accentGlow: "rgba(168, 85, 247, 0.25)",
-    borderColor: "rgba(16, 185, 129, 0.3)",
+    accentGlow: "rgba(16, 185, 129, 0.28)",
+    borderColor: "rgba(16, 185, 129, 0.35)",
     tag: "Made for You"
   },
   {
@@ -76,8 +80,8 @@ const USER_FRIENDLY_BOARDS = [
     patientPill: "High-Res 7T Imaging",
     icon: Activity,
     gradient: "from-blue-600 to-indigo-600",
-    accentGlow: "rgba(59, 130, 246, 0.25)",
-    borderColor: "rgba(59, 130, 246, 0.3)",
+    accentGlow: "rgba(59, 130, 246, 0.28)",
+    borderColor: "rgba(59, 130, 246, 0.35)",
     tag: "Quick & Accurate"
   },
   {
@@ -90,8 +94,8 @@ const USER_FRIENDLY_BOARDS = [
     patientPill: "Always Open 24/7",
     icon: ShieldAlert,
     gradient: "from-rose-500 to-orange-500",
-    accentGlow: "rgba(244, 63, 94, 0.25)",
-    borderColor: "rgba(244, 63, 94, 0.3)",
+    accentGlow: "rgba(244, 63, 94, 0.28)",
+    borderColor: "rgba(244, 63, 94, 0.35)",
     tag: "Always Here for You"
   },
   {
@@ -104,13 +108,14 @@ const USER_FRIENDLY_BOARDS = [
     patientPill: "Digital Arrival Pass",
     icon: CalendarCheck,
     gradient: "from-purple-500 to-blue-600",
-    accentGlow: "rgba(168, 85, 247, 0.25)",
-    borderColor: "rgba(168, 85, 247, 0.3)",
+    accentGlow: "rgba(168, 85, 247, 0.28)",
+    borderColor: "rgba(168, 85, 247, 0.35)",
     tag: "Book in 60 Seconds"
   }
 ];
 
-function FriendlyHoverBoardCard({ item, index, onSelectBoard }) {
+// Minimized & Sleek Hover Board Card
+function MinimizedHoverBoardCard({ item, index, onSelectBoard, isCarousel = true }) {
   const cardRef = useRef(null);
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const [glare, setGlare] = useState({ x: 50, y: 50, opacity: 0 });
@@ -127,14 +132,14 @@ function FriendlyHoverBoardCard({ item, index, onSelectBoard }) {
     const yPct = (y / rect.height) * 2 - 1;
 
     setRotate({
-      x: -yPct * 8,
-      y: xPct * 8,
+      x: -yPct * 6,
+      y: xPct * 6,
     });
 
     setGlare({
       x: (x / rect.width) * 100,
       y: (y / rect.height) * 100,
-      opacity: 0.4,
+      opacity: 0.35,
     });
   };
 
@@ -153,97 +158,99 @@ function FriendlyHoverBoardCard({ item, index, onSelectBoard }) {
     <motion.div
       ref={cardRef}
       layout
-      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+      initial={{ opacity: 0, scale: 0.94, y: 14 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9, y: -20 }}
-      transition={{ duration: 0.45, delay: index * STAGGER_UNIT, ease: [0.16, 1, 0.3, 1] }}
+      exit={{ opacity: 0, scale: 0.94, y: -14 }}
+      transition={{ duration: 0.4, delay: index * STAGGER_UNIT, ease: [0.16, 1, 0.3, 1] }}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="perspective-1000 cursor-pointer select-none group relative"
-      style={{ minHeight: '290px' }}
+      className={`perspective-1000 cursor-pointer select-none group relative ${
+        isCarousel ? 'w-[290px] sm:w-[325px] flex-shrink-0' : 'w-full'
+      }`}
+      style={{ height: '210px' }}
     >
       <div
-        className="w-full h-full rounded-[2rem] transition-all duration-500 preserve-3d relative"
+        className="w-full h-full rounded-[1.6rem] transition-all duration-450 preserve-3d relative"
         style={{
-          transform: `perspective(1000px) rotateY(${isFlipped ? 180 : rotate.y}deg) rotateX(${isFlipped ? 0 : rotate.x}deg) translateZ(${isHovered ? 12 : 0}px)`,
+          transform: `perspective(1000px) rotateY(${isFlipped ? 180 : rotate.y}deg) rotateX(${isFlipped ? 0 : rotate.x}deg) translateZ(${isHovered ? 8 : 0}px)`,
         }}
       >
-        {/* FRONT FACE OF CARD */}
+        {/* FRONT FACE: MINIMIZED SLEEK CARD */}
         <div
           onClick={() => onSelectBoard(item)}
-          className={`w-full h-full rounded-[2rem] p-6 backface-hidden flex flex-col justify-between relative overflow-hidden border transition-all duration-300 ${
+          className={`w-full h-full rounded-[1.6rem] p-4 sm:p-4.5 backface-hidden flex flex-col justify-between relative overflow-hidden border transition-all duration-300 ${
             isHovered
-              ? 'bg-gradient-to-br from-white/95 to-blue-50/90 dark:from-[#0E2236] dark:to-[#0B1E30]'
-              : 'bg-white/85 dark:bg-[#0D1E2E]/80 border-gray-100 dark:border-gray-800 shadow-sm'
+              ? 'bg-gradient-to-br from-white/95 via-blue-50/90 to-cyan-50/40 dark:from-[#0E2236] dark:to-[#0B1E30]'
+              : 'bg-white/90 dark:bg-[#0D1E2E]/85 border-slate-100 dark:border-slate-800/80 shadow-[0_8px_24px_rgba(11,36,56,0.04)]'
           }`}
           style={{
             boxShadow: isHovered
-              ? `0 25px 50px -12px ${item.accentGlow}, 0 0 0 1.5px ${item.borderColor}`
-              : '0 12px 30px 0 rgba(11, 36, 56, 0.04), 0 0 0 1px rgba(255, 255, 255, 0.9)',
+              ? `0 20px 38px -10px ${item.accentGlow}, 0 0 0 1.5px ${item.borderColor}`
+              : '0 8px 24px -4px rgba(11, 36, 56, 0.04), 0 0 0 1px rgba(255, 255, 255, 0.85)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
           }}
         >
           {/* Dynamic Light Sweep Shimmer Animation on Hover */}
-          <div className="pointer-events-none absolute inset-0 w-full h-full overflow-hidden rounded-[2rem]">
-            <div className="w-[140%] h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-1000 ease-out" />
+          <div className="pointer-events-none absolute inset-0 w-full h-full overflow-hidden rounded-[1.6rem]">
+            <div className="w-[140%] h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-800 ease-out" />
           </div>
 
           {/* Dynamic Glass Reflection Glare */}
           <div
-            className="pointer-events-none absolute inset-0 transition-opacity duration-300 rounded-[2rem]"
+            className="pointer-events-none absolute inset-0 transition-opacity duration-300 rounded-[1.6rem]"
             style={{
               opacity: glare.opacity,
-              background: `radial-gradient(circle 200px at ${glare.x}% ${glare.y}%, rgba(255, 255, 255, 0.7) 0%, transparent 80%)`,
+              background: `radial-gradient(circle 180px at ${glare.x}% ${glare.y}%, rgba(255, 255, 255, 0.6) 0%, transparent 75%)`,
             }}
           />
 
           {/* Ambient Corner Aura Glow */}
           <div
-            className={`absolute -top-12 -right-12 w-32 h-32 rounded-full bg-gradient-to-br ${item.gradient} blur-2xl transition-all duration-500 ${
+            className={`absolute -top-10 -right-10 w-28 h-28 rounded-full bg-gradient-to-br ${item.gradient} blur-xl transition-all duration-500 ${
               isHovered ? 'opacity-35 scale-125' : 'opacity-10 scale-100'
             }`}
           />
 
           {/* Top Header Row */}
-          <div className="flex items-center justify-between relative z-10 mb-2">
-            <div
-              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-                isHovered
-                  ? `bg-gradient-to-tr ${item.gradient} text-white shadow-md scale-110 rotate-3`
-                  : 'bg-blue-50 text-[#2F80ED]'
-              }`}
-            >
-              <IconComponent className="w-5 h-5" />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-[#2F80ED] bg-blue-50/90 border border-blue-100 px-2.5 py-1 rounded-full shadow-xs">
+          <div className="flex items-center justify-between relative z-10">
+            <div className="flex items-center gap-2.5">
+              <div
+                className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                  isHovered
+                    ? `bg-gradient-to-tr ${item.gradient} text-white shadow-md scale-105 rotate-2`
+                    : 'bg-blue-50 text-[#2F80ED]'
+                }`}
+              >
+                <IconComponent className="w-4.5 h-4.5" />
+              </div>
+              <span className="text-[10px] font-bold text-[#2F80ED] bg-blue-50/90 border border-blue-100/90 px-2 py-0.5 rounded-full shadow-2xs">
                 {item.tag}
               </span>
-              <span className="font-mono text-2xl font-black text-slate-200 group-hover:text-[#2F80ED] transition-colors duration-300">
-                {item.number}
-              </span>
             </div>
+
+            <span className="font-mono text-xl font-black text-slate-200 dark:text-slate-700 group-hover:text-[#2F80ED] transition-colors duration-300">
+              {item.number}
+            </span>
           </div>
 
           {/* Middle Content */}
-          <div className="my-2 relative z-10 flex-1 flex flex-col justify-center">
-            <h3 className="font-display text-xl font-bold text-[#0B2438] dark:text-white mb-1.5 tracking-tight group-hover:text-[#2F80ED] transition-colors">
+          <div className="my-1 relative z-10 flex-1 flex flex-col justify-center">
+            <h3 className="font-display text-[15px] sm:text-base font-bold text-[#0B2438] dark:text-white mb-1 tracking-tight group-hover:text-[#2F80ED] transition-colors line-clamp-1">
               {item.title}
             </h3>
-            <p className="text-xs text-[#4A6278] dark:text-gray-400 leading-relaxed font-normal">
+            <p className="text-[11.5px] sm:text-xs text-[#4A6278] dark:text-gray-400 leading-relaxed font-normal line-clamp-2">
               {item.plainText}
             </p>
           </div>
 
           {/* Bottom Key Benefit & Action Row */}
-          <div className="pt-3 border-t border-slate-100 dark:border-gray-800 flex items-center justify-between relative z-10">
-            <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800 px-3 py-1 rounded-full inline-flex items-center gap-1.5 shadow-xs">
-              <span className="relative flex h-2 w-2">
+          <div className="pt-2 border-t border-slate-100 dark:border-gray-800 flex items-center justify-between relative z-10">
+            <span className="text-[10px] sm:text-[10.5px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 shadow-2xs">
+              <span className="relative flex h-1.5 w-1.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
               </span>
               {item.benefit}
             </span>
@@ -254,64 +261,64 @@ function FriendlyHoverBoardCard({ item, index, onSelectBoard }) {
                 e.stopPropagation();
                 setIsFlipped(true);
               }}
-              className="text-[11px] font-mono font-bold text-cyan-600 dark:text-cyan-400 hover:text-blue-600 px-2 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/50 border border-cyan-200/60 transition-colors flex items-center gap-1"
+              className="text-[10px] font-mono font-bold text-cyan-600 dark:text-cyan-400 hover:text-blue-600 px-2 py-0.5 rounded-md bg-cyan-50 dark:bg-cyan-950/50 border border-cyan-200/60 transition-colors flex items-center gap-1 group/holo"
+              title="View holographic telemetry"
             >
               <span>Hologram</span>
-              <Sparkles className="w-3 h-3" />
+              <Sparkles className="w-2.5 h-2.5 group-hover/holo:rotate-12 transition-transform" />
             </button>
           </div>
         </div>
 
-        {/* BACK FACE: HOLOGRAPHIC SCI-FI DATA MATRIX */}
+        {/* BACK FACE: COMPACT HOLOGRAPHIC SCI-FI DATA MATRIX */}
         <div
           onClick={() => setIsFlipped(false)}
-          className="absolute inset-0 w-full h-full rounded-[2rem] p-6 backface-hidden bg-[#080B1A]/95 text-white border border-cyan-400/50 shadow-[0_25px_60px_rgba(0,240,255,0.3)] flex flex-col justify-between overflow-hidden"
+          className="absolute inset-0 w-full h-full rounded-[1.6rem] p-4 backface-hidden bg-[#080B1A]/95 text-white border border-cyan-400/50 shadow-[0_20px_45px_rgba(0,240,255,0.25)] flex flex-col justify-between overflow-hidden"
           style={{
             transform: 'rotateY(180deg)',
           }}
         >
-          {/* Faint particle grid background */}
-          <div className="absolute inset-0 circuit-grid-bg opacity-30 pointer-events-none" />
+          {/* Particle grid background */}
+          <div className="absolute inset-0 circuit-grid-bg opacity-25 pointer-events-none" />
 
           {/* Header */}
           <div className="flex items-center justify-between relative z-10">
-            <span className="font-mono text-[10px] font-extrabold text-[#00F0FF] tracking-widest uppercase">
+            <span className="font-mono text-[9px] font-extrabold text-[#00F0FF] tracking-widest uppercase">
               HOLOGRAPHIC SPEC // #{item.number}
             </span>
-            <span className="w-2 h-2 rounded-full bg-[#00F0FF] animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] animate-pulse" />
           </div>
 
           {/* Hologram Middle Spec Details */}
-          <div className="my-2 relative z-10 space-y-2">
-            <h4 className="font-mono text-lg font-black text-white">
+          <div className="my-1 relative z-10 space-y-1.5">
+            <h4 className="font-mono text-sm font-black text-white line-clamp-1">
               {item.title} // TELEMETRY
             </h4>
-            <p className="text-xs text-cyan-200/90 leading-relaxed">
-              {item.plainText} Enhanced with real-time biometric tracking and algorithmic verification.
-            </p>
-            <div className="p-2.5 rounded-xl bg-cyan-950/60 border border-cyan-500/30 flex items-center justify-between text-[11px] font-mono">
+            <div className="p-1.5 rounded-lg bg-cyan-950/60 border border-cyan-500/30 flex items-center justify-between text-[10px] font-mono">
               <span className="text-gray-400">STATUS:</span>
               <span className="text-[#00F0FF] font-bold">ONLINE · VERIFIED</span>
             </div>
+            <p className="text-[10.5px] text-cyan-200/85 leading-relaxed line-clamp-2">
+              {item.plainText} Real-time biometric feedback & clinical verification enabled.
+            </p>
           </div>
 
           {/* Flip Return Action */}
-          <div className="pt-2 border-t border-cyan-500/30 flex items-center justify-between relative z-10">
-            <span className="text-[10px] font-mono text-gray-400">
-              Click to return
+          <div className="pt-1.5 border-t border-cyan-500/30 flex items-center justify-between relative z-10">
+            <span className="text-[9px] font-mono text-gray-400">
+              Click to flip back
             </span>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onSelectBoard(item);
               }}
-              className="px-3 py-1.5 rounded-xl bg-[#00F0FF] text-[#080B1A] font-mono text-xs font-black shadow-md hover:bg-white transition-colors"
+              className="px-2.5 py-1 rounded-lg bg-[#00F0FF] text-[#080B1A] font-mono text-[10.5px] font-black shadow-sm hover:bg-white transition-colors"
             >
-              Examine Protocol
+              Examine
             </button>
           </div>
         </div>
-
       </div>
     </motion.div>
   );
@@ -327,6 +334,12 @@ export default function HoverBoardsSection({ hospitalName, onOpenBooking }) {
   const [selectedBoard, setSelectedBoard] = useState(null);
   const [activeTab, setActiveTab] = useState('all');
   const [wordIndex, setWordIndex] = useState(0);
+  const [layoutMode, setLayoutMode] = useState('side-by-side'); // 'side-by-side' | 'grid'
+  
+  // Continuous Scrolling Animation State
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const [isHoveredOverTrack, setIsHoveredOverTrack] = useState(false);
+  const [scrollDirection, setScrollDirection] = useState('forward'); // 'forward' | 'reverse'
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -339,10 +352,15 @@ export default function HoverBoardsSection({ hospitalName, onOpenBooking }) {
     ? USER_FRIENDLY_BOARDS
     : USER_FRIENDLY_BOARDS.filter(b => b.category === activeTab);
 
+  // Repeat boards list to create a seamless, uninterrupted infinite scrolling loop
+  const displayBoards = filteredBoards.length <= 2
+    ? [...filteredBoards, ...filteredBoards, ...filteredBoards, ...filteredBoards]
+    : [...filteredBoards, ...filteredBoards];
+
   return (
     <section
       id="services"
-      className="relative py-20 lg:py-28 overflow-hidden bg-[#F8FBFF]"
+      className="relative py-16 lg:py-24 overflow-hidden bg-[#F8FBFF]"
     >
       {/* Hospital Name Background Marquee */}
       <HospitalMarqueeBackground hospitalName={hospitalName} reverse={true} />
@@ -353,17 +371,17 @@ export default function HoverBoardsSection({ hospitalName, onOpenBooking }) {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-10">
+        <div className="text-center max-w-3xl mx-auto mb-8">
           {/* Animated Category Badge */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50/90 border border-blue-200/70 text-xs font-bold text-[#2F80ED] uppercase tracking-wider mb-4 shadow-sm backdrop-blur-sm"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50/90 border border-blue-200/70 text-xs font-bold text-[#2F80ED] uppercase tracking-wider mb-3 shadow-sm backdrop-blur-sm"
           >
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2F80ED] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#2F80ED]"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2F80ED] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#2F80ED]" />
             </span>
             <Sparkles className="w-3.5 h-3.5 text-[#2F80ED]" />
             <span>HOW WE CARE FOR YOU</span>
@@ -375,13 +393,13 @@ export default function HoverBoardsSection({ hospitalName, onOpenBooking }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-[#0B2438] tracking-tight mb-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-2"
+            className="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-[#0B2438] tracking-tight mb-2.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5"
           >
             <span>Healthcare,</span>
             <button
               type="button"
               onClick={() => setWordIndex((prev) => (prev + 1) % ROTATING_WORDS.length)}
-              className="relative inline-flex items-center justify-center min-w-[200px] sm:min-w-[270px] lg:min-w-[310px] text-center cursor-pointer select-none group focus:outline-none"
+              className="relative inline-flex items-center justify-center min-w-[200px] sm:min-w-[260px] lg:min-w-[295px] text-center cursor-pointer select-none group focus:outline-none"
               title="Click to switch word"
             >
               {/* Dynamic glowing aura backdrop */}
@@ -397,19 +415,19 @@ export default function HoverBoardsSection({ hospitalName, onOpenBooking }) {
               <AnimatePresence mode="wait">
                 <motion.span
                   key={ROTATING_WORDS[wordIndex].text}
-                  initial={{ opacity: 0, y: 20, filter: 'blur(8px)', rotateX: -30 }}
+                  initial={{ opacity: 0, y: 18, filter: 'blur(8px)', rotateX: -30 }}
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)', rotateX: 0 }}
-                  exit={{ opacity: 0, y: -20, filter: 'blur(8px)', rotateX: 30 }}
-                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  exit={{ opacity: 0, y: -18, filter: 'blur(8px)', rotateX: 30 }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                   className={`inline-block font-black bg-gradient-to-r ${ROTATING_WORDS[wordIndex].gradient} bg-clip-text text-transparent group-hover:scale-[1.03] transition-transform duration-200`}
                 >
                   {ROTATING_WORDS[wordIndex].text}
                 </motion.span>
               </AnimatePresence>
 
-              {/* Animated SVG Swoop Underline Flourish */}
+              {/* Animated SVG Swoop Underline */}
               <svg
-                className="absolute -bottom-1 sm:-bottom-2 left-1/2 -translate-x-1/2 w-4/5 max-w-[240px] h-3 overflow-visible pointer-events-none"
+                className="absolute -bottom-1 sm:-bottom-1.5 left-1/2 -translate-x-1/2 w-4/5 max-w-[230px] h-3 overflow-visible pointer-events-none"
                 viewBox="0 0 240 12"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -436,7 +454,7 @@ export default function HoverBoardsSection({ hospitalName, onOpenBooking }) {
           </motion.h2>
 
           {/* Interactive Word Indicator Pills */}
-          <div className="flex items-center justify-center gap-1.5 mb-3">
+          <div className="flex items-center justify-center gap-1.5 mb-2.5">
             {ROTATING_WORDS.map((item, idx) => (
               <button
                 key={item.text}
@@ -458,64 +476,182 @@ export default function HoverBoardsSection({ hospitalName, onOpenBooking }) {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-xs sm:text-sm text-[#4A6278] leading-relaxed max-w-xl mx-auto"
           >
-            Everything you need for your health in one place. Select a category below or explore our innovative care services.
+            Explore our minimized care boards scrolling side-by-side. Hover over any board to pause and inspect clinical details.
           </motion.p>
         </div>
 
-        {/* Animated Interactive Tabs with Fluid Floating Pill */}
-        <div className="flex items-center justify-center mb-10 overflow-x-auto py-2 px-1">
-          <div className="inline-flex items-center gap-1.5 p-1.5 rounded-full bg-white/85 backdrop-blur-xl border border-white/90 shadow-[0_8px_30px_rgba(11,36,56,0.06)]">
-            {CATEGORY_TABS.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`relative px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 flex items-center gap-2 select-none outline-none ${isActive ? 'text-white' : 'text-[#4A6278] hover:text-[#0B2438] hover:bg-white/60'
+        {/* Controls Bar: Category Tabs + Scrolling Controls + View Switcher */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-7">
+          {/* Animated Category Tabs */}
+          <div className="flex items-center justify-center overflow-x-auto py-1 px-1 max-w-full no-scrollbar">
+            <div className="inline-flex items-center gap-1.5 p-1 rounded-full bg-white/85 backdrop-blur-xl border border-white/90 shadow-[0_6px_24px_rgba(11,36,56,0.05)]">
+              {CATEGORY_TABS.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`relative px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-[13px] font-bold transition-all duration-300 flex items-center gap-1.5 select-none outline-none ${
+                      isActive ? 'text-white' : 'text-[#4A6278] hover:text-[#0B2438] hover:bg-white/60'
                     }`}
-                >
-                  {/* Fluid Sliding Active Tab Background Capsule */}
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeHoverBoardTab"
-                      transition={{ type: 'spring', stiffness: 450, damping: 32 }}
-                      className="absolute inset-0 rounded-full bg-gradient-to-r from-[#2F80ED] to-[#1E6FD9] shadow-[0_4px_16px_rgba(47,128,237,0.35)]"
-                    />
-                  )}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeHoverBoardTab"
+                        transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                        className="absolute inset-0 rounded-full bg-gradient-to-r from-[#2F80ED] to-[#1E6FD9] shadow-[0_4px_14px_rgba(47,128,237,0.35)]"
+                      />
+                    )}
 
-                  <span className="relative z-10 flex items-center gap-2">
-                    <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 ${isActive ? 'scale-110 rotate-3' : ''}`} />
-                    <span>{tab.label}</span>
-                    <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold transition-colors ${isActive ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-500'
+                    <span className="relative z-10 flex items-center gap-1.5">
+                      <Icon className={`w-3.5 h-3.5 transition-transform duration-300 ${isActive ? 'scale-110 rotate-3' : ''}`} />
+                      <span>{tab.label}</span>
+                      <span
+                        className={`text-[9.5px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
+                          isActive ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-500'
                         }`}
-                    >
-                      {tab.count}
+                      >
+                        {tab.count}
+                      </span>
                     </span>
-                  </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right Controls: Auto-Scroll Status, Play/Pause, Direction, View Switch */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-center">
+            {/* Scrolling Animation Status Indicator */}
+            {layoutMode === 'side-by-side' && (
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 border border-slate-200/80 shadow-2xs backdrop-blur-md text-xs font-semibold">
+                <span className="relative flex h-2 w-2">
+                  {isAutoPlay && !isHoveredOverTrack ? (
+                    <>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                    </>
+                  ) : (
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
+                  )}
+                </span>
+                <span className="text-[#0B2438]">
+                  {isHoveredOverTrack
+                    ? 'Paused on Hover'
+                    : isAutoPlay
+                    ? 'Auto-Scrolling'
+                    : 'Paused'}
+                </span>
+
+                {/* Play / Pause Toggle Button */}
+                <button
+                  onClick={() => setIsAutoPlay(prev => !prev)}
+                  className="ml-1 p-1 rounded-full hover:bg-blue-50 text-[#2F80ED] transition-colors"
+                  title={isAutoPlay ? "Pause scrolling" : "Resume scrolling"}
+                >
+                  {isAutoPlay ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
                 </button>
-              );
-            })}
+
+                {/* Direction Switch Button */}
+                <button
+                  onClick={() => setScrollDirection(prev => prev === 'forward' ? 'reverse' : 'forward')}
+                  className="p-1 rounded-full hover:bg-blue-50 text-[#2F80ED] transition-colors"
+                  title="Reverse scroll direction"
+                >
+                  <ArrowLeftRight className="w-3 h-3" />
+                </button>
+              </div>
+            )}
+
+            {/* View Mode Toggle: Side-by-Side Scrolling vs Compact Grid */}
+            <div className="inline-flex items-center p-1 rounded-full bg-white/80 border border-slate-200/80 shadow-2xs backdrop-blur-md">
+              <button
+                onClick={() => setLayoutMode('side-by-side')}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  layoutMode === 'side-by-side'
+                    ? 'bg-[#2F80ED] text-white shadow-xs'
+                    : 'text-[#4A6278] hover:text-[#0B2438]'
+                }`}
+                title="Continuous horizontal scrolling animation"
+              >
+                <Columns3 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Scrolling Track</span>
+              </button>
+
+              <button
+                onClick={() => setLayoutMode('grid')}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  layoutMode === 'grid'
+                    ? 'bg-[#2F80ED] text-white shadow-xs'
+                    : 'text-[#4A6278] hover:text-[#0B2438]'
+                }`}
+                title="Compact grid layout"
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Grid</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Animated 3D Cards Grid with Stagger & Layout Transitions */}
-        <motion.div
-          layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6"
-        >
-          <AnimatePresence mode="popLayout">
-            {filteredBoards.map((item, index) => (
-              <FriendlyHoverBoardCard
-                key={item.id}
-                item={item}
-                index={index}
-                onSelectBoard={(board) => setSelectedBoard(board)}
-              />
-            ))}
-          </AnimatePresence>
-        </motion.div>
+        {/* CONTINUOUS SCROLLING ANIMATION TRACK (Default) */}
+        {layoutMode === 'side-by-side' ? (
+          <div
+            className="relative w-full py-4 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 overflow-hidden group/marquee"
+            onMouseEnter={() => setIsHoveredOverTrack(true)}
+            onMouseLeave={() => setIsHoveredOverTrack(false)}
+          >
+            {/* Soft Edge Gradient Fog / Luxury Mist Masks */}
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-32 bg-gradient-to-r from-[#F8FBFF] to-transparent z-20" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-32 bg-gradient-to-l from-[#F8FBFF] to-transparent z-20" />
+
+            {/* Seamless Infinite Scrolling Animation Track */}
+            <div
+              className="flex items-center gap-5 will-change-transform"
+              style={{
+                width: 'max-content',
+                animation: `marquee-scroll ${filteredBoards.length <= 2 ? '24s' : '36s'} linear infinite ${scrollDirection === 'reverse' ? 'reverse' : 'normal'}`,
+                animationPlayState: (!isAutoPlay || isHoveredOverTrack) ? 'paused' : 'running',
+              }}
+            >
+              {displayBoards.map((item, index) => (
+                <MinimizedHoverBoardCard
+                  key={`${item.id}-${index}`}
+                  item={item}
+                  index={index % filteredBoards.length}
+                  isCarousel={true}
+                  onSelectBoard={(board) => setSelectedBoard(board)}
+                />
+              ))}
+            </div>
+
+            {/* Interaction Helper Notice */}
+            <div className="text-center pt-4 pb-1">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-400 bg-white/70 px-3 py-1 rounded-full border border-slate-100 shadow-2xs">
+                <span>✦ Hover over any board to pause scrolling & explore holograms</span>
+              </span>
+            </div>
+          </div>
+        ) : (
+          /* COMPACT GRID VIEW (For users who toggle to Grid) */
+          <motion.div
+            layout
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"
+          >
+            <AnimatePresence mode="popLayout">
+              {filteredBoards.map((item, index) => (
+                <MinimizedHoverBoardCard
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  isCarousel={false}
+                  onSelectBoard={(board) => setSelectedBoard(board)}
+                />
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        )}
 
         {/* Friendly Quick-Details Modal */}
         <AnimatePresence>
@@ -525,7 +661,7 @@ export default function HoverBoardsSection({ hospitalName, onOpenBooking }) {
                 initial={{ opacity: 0, scale: 0.92, y: 15 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.92, y: 15 }}
-                className="relative w-full max-w-lg p-7 rounded-[2.25rem] bg-white/95 backdrop-blur-2xl border border-white shadow-2xl space-y-4"
+                className="relative w-full max-w-lg p-6 sm:p-7 rounded-[2.25rem] bg-white/95 backdrop-blur-2xl border border-white shadow-2xl space-y-4"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
@@ -584,7 +720,7 @@ export default function HoverBoardsSection({ hospitalName, onOpenBooking }) {
                   <button
                     onClick={() => {
                       setSelectedBoard(null);
-                      onOpenBooking();
+                      if (onOpenBooking) onOpenBooking();
                     }}
                     className="px-6 py-2.5 rounded-full text-xs font-bold text-white bg-[#2F80ED] hover:bg-blue-600 shadow-md shadow-blue-500/20 flex items-center gap-1.5"
                   >
@@ -601,4 +737,5 @@ export default function HoverBoardsSection({ hospitalName, onOpenBooking }) {
     </section>
   );
 }
+
 

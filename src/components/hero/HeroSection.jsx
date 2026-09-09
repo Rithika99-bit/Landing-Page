@@ -164,17 +164,17 @@ export default function HeroSection({ hospitalName, onOpenBooking }) {
                   animate={{ x: btnPos.x, y: btnPos.y }}
                   transition={{ type: 'spring', stiffness: 350, damping: 25 }}
                   onClick={handlePrimaryClick}
-                  className="relative px-7 py-4 text-sm sm:text-base font-bold text-white bg-gradient-to-r from-[#00C2CB] via-[#2F80ED] to-[#7B5CFA] rounded-full shadow-[0_12px_32px_rgba(0,194,203,0.35)] hover:shadow-[0_16px_45px_rgba(0,240,255,0.55)] transition-all duration-300 flex items-center gap-3 group overflow-hidden border border-white/20"
+                  className="relative px-7 py-4 text-sm sm:text-base font-bold text-white bg-gradient-to-r from-[#00C2CB] via-[#2F80ED] to-[#7B5CFA] rounded-full shadow-[0_12px_32px_rgba(0,194,203,0.35)] hover:shadow-[0_16px_45px_rgba(0,240,255,0.55)] transition-all duration-300 flex items-center gap-3 group overflow-hidden border border-white/20 cursor-pointer z-20"
                 >
                   {/* Fingerprint / Scan Ripple Effect on Click */}
                   {isScanningClick && (
-                    <span className="absolute inset-0 rounded-full bg-[#00F0FF]/30 animate-ping" />
+                    <span className="absolute inset-0 rounded-full bg-[#00F0FF]/30 animate-ping pointer-events-none" />
                   )}
 
-                  <span className="absolute inset-0 w-full h-full bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></span>
-                  <Calendar className="w-5 h-5 transition-transform group-hover:scale-110" />
-                  <span>Book an Appointment</span>
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  <span className="absolute inset-0 w-full h-full bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none"></span>
+                  <Calendar className="w-5 h-5 transition-transform group-hover:scale-110 pointer-events-none" />
+                  <span className="pointer-events-none">Book an Appointment</span>
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 pointer-events-none" />
                 </motion.button>
               </div>
 

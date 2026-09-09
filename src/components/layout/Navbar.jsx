@@ -20,7 +20,7 @@ export default function Navbar({ hospitalName, onOpenBooking, onOpenLogin, onCha
       setScrolled(window.scrollY > 20);
 
       // Simple active section detection
-      const sections = ['hero', 'about', 'services', 'doctors', 'contact'];
+      const sections = ['hero', 'about', 'services', 'doctors', 'patient-reviews', 'contact'];
       for (const section of sections) {
         const el = document.getElementById(section);
         if (el) {
@@ -156,11 +156,11 @@ export default function Navbar({ hospitalName, onOpenBooking, onOpenLogin, onCha
             </button>
             <button
               onClick={onOpenBooking}
-              className="relative inline-flex items-center gap-2 px-5 py-2.5 text-xs lg:text-sm font-bold tracking-wide text-white bg-gradient-to-r from-[#2F80ED] to-[#1E6FD9] rounded-full shadow-[0_8px_20px_rgba(47,128,237,0.25)] hover:shadow-[0_12px_28px_rgba(47,128,237,0.38)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 group overflow-hidden"
+              className="relative inline-flex items-center gap-2 px-5 py-2.5 text-xs lg:text-sm font-bold tracking-wide text-white bg-gradient-to-r from-[#2F80ED] to-[#1E6FD9] rounded-full shadow-[0_8px_20px_rgba(47,128,237,0.25)] hover:shadow-[0_12px_28px_rgba(47,128,237,0.38)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 group overflow-hidden cursor-pointer z-20"
             >
-              <span className="absolute inset-0 w-full h-full bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></span>
-              <Calendar className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
-              <span>BOOK APPOINTMENT</span>
+              <span className="absolute inset-0 w-full h-full bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none"></span>
+              <Calendar className="w-4 h-4 transition-transform duration-200 group-hover:scale-110 pointer-events-none" />
+              <span className="pointer-events-none">BOOK APPOINTMENT</span>
             </button>
           </div>
 

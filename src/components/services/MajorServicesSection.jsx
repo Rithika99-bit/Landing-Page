@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import HospitalMarqueeBackground from '../ui/HospitalMarqueeBackground';
 import { STAGGER_UNIT } from '../../utils/animationTokens';
+import { createPortal } from 'react-dom';
+import { useModalScrollLock } from '../../hooks/useModalScrollLock';
 
 const ICON_MAP = {
 
@@ -350,6 +352,9 @@ export default function MajorServicesSection({ onOpenBooking }) {
   const [selectedService, setSelectedService] = useState(null);
   const [activeCategory, setActiveCategory] = useState('ALL');
 
+  // Lock background scrolling and allow Escape key dismissal
+  useModalScrollLock(Boolean(selectedService), () => setSelectedService(null));
+
   const categories = ['ALL', 'HEART & VASCULAR', 'BRAIN & SPINE', 'SURGICAL SUITES', 'CLINICAL ANALYTICS'];
 
   const filteredServices = activeCategory === 'ALL'
@@ -378,8 +383,8 @@ export default function MajorServicesSection({ onOpenBooking }) {
               <span>SPECIALIZED CLINICAL HUBS</span>
             </div>
             <motion.h2
-              initial={{ opacity: 0, y: 30, clipPath: 'inset(100% 0% 0% 0%)' }}
-              whileInView={{ opacity: 1, y: 0, clipPath: 'inset(0% 0% 0% 0%)' }}
+              initial={{ opacity: 0, y: 30, clipPath: 'inset(100% 0% 0%)' }}
+              whileInView={{ opacity: 1, y: 0, clipPath: 'inset(0% 0% 0%)' }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0B2438] tracking-tight"
@@ -420,114 +425,138 @@ export default function MajorServicesSection({ onOpenBooking }) {
           ))}
         </div>
 
-        {/* Interactive 3D Department Inspection Console Dialog */}
-        <AnimatePresence>
-          {selectedService && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B2438]/50 backdrop-blur-md animate-in fade-in duration-200">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.92, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.92, y: 20 }}
-                className="relative w-full max-w-2xl rounded-[2.5rem] bg-white/95 backdrop-blur-2xl border border-white shadow-2xl overflow-hidden"
-              >
-                {/* Header Strip with Thematic Gradient */}
-                <div className={`p-7 bg-gradient-to-r ${selectedTheme.bgGradient} border-b border-gray-100 flex items-start justify-between relative`}>
-                  <div>
-                    <div className="flex items-center gap-2.5 mb-2">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-[#2F80ED] bg-white px-2.5 py-1 rounded-full shadow-sm border border-blue-100">
-                        {selectedService.category}
-                      </span>
-                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                        {selectedService.stat}
-                      </span>
-                    </div>
-                    <h3 className="text-2xl sm:text-3xl font-extrabold text-[#0B2438]">
-                      {selectedService.title}
-                    </h3>
-                  </div>
-
-                  <button
-                    onClick={() => setSelectedService(null)}
-                    className="w-9 h-9 rounded-full bg-white/90 hover:bg-white text-gray-500 hover:text-gray-800 flex items-center justify-center shadow-md transition-colors font-bold"
+        {/* Interactive 3D Department Inspection Console Dialog (Mounted via Portal at z-[1000]) */}
+        {typeof document !== 'undefined' &&
+          createPortal(
+            <AnimatePresence>
+              {selectedService && (
+                <div
+                  className="fixed inset-0 z-[1000] flex items-center justify-center p-3 sm:p-6 bg-[#081524]/80 backdrop-blur-md animate-in fade-in duration-200"
+                  onClick={(e) => {
+                    if (e.target === e.currentTarget) setSelectedService(null);
+                  }}
+                >
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.94, y: 16 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.94, y: 16 }}
+                    transition={{ duration: 0.2 }}
+                    className="relative w-full max-w-2xl max-h-[90vh] sm:max-h-[85vh] flex flex-col rounded-3xl sm:rounded-[2.25rem] bg-white shadow-[0_25px_70px_rgba(11,36,56,0.35)] border border-white/80 overflow-hidden"
+                    data-lenis-prevent
                   >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-
-                <div className="p-7 sm:p-8 space-y-6">
-                  {/* Visual Simulator in Modal */}
-                  <DepartmentVisualSimulator serviceId={selectedService.id} isHovered={true} />
-
-                  <p className="text-sm text-[#4A6278] leading-relaxed font-normal">
-                    {selectedService.description} Every case is managed under rigorous peer-reviewed clinical pathways with direct multidisciplinary board oversight.
-                  </p>
-
-                  {/* 3 Metric Pillars */}
-                  <div className="grid grid-cols-3 gap-3">
-                    {selectedTheme.metrics.map((m, idx) => (
-                      <div key={idx} className="p-3.5 rounded-2xl bg-gray-50 border border-gray-100 text-center">
-                        <span className="text-lg font-black text-[#2F80ED] font-mono block">
-                          {m.val}
-                        </span>
-                        <span className="text-[10px] font-bold text-[#4A6278] uppercase">
-                          {m.label}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Lead Specialist Row */}
-                  {leadDoctor && (
-                    <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-100 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={leadDoctor.image}
-                          alt={leadDoctor.name}
-                          className="w-12 h-12 rounded-xl object-cover border-2 border-white shadow-sm"
-                        />
-                        <div>
-                          <span className="text-[10px] font-bold text-[#2F80ED] uppercase tracking-wider block">
-                            Department Chair
+                    {/* Sticky Header Strip with Thematic Gradient */}
+                    <div
+                      className={`p-5 sm:p-6 bg-gradient-to-r ${selectedTheme.bgGradient} border-b border-gray-100 flex items-center justify-between shrink-0 sticky top-0 z-20 backdrop-blur-md`}
+                    >
+                      <div className="pr-3 sm:pr-4">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-[#2F80ED] bg-white px-2.5 py-0.5 rounded-full shadow-sm border border-blue-100">
+                            {selectedService.category}
                           </span>
-                          <h5 className="text-sm font-bold text-[#0B2438]">
-                            {leadDoctor.name}
-                          </h5>
-                          <p className="text-[11px] text-[#4A6278]">
-                            {leadDoctor.role}
-                          </p>
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                            {selectedService.stat}
+                          </span>
                         </div>
+                        <h3 className="text-xl sm:text-2xl font-extrabold text-[#0B2438] tracking-tight">
+                          {selectedService.title}
+                        </h3>
                       </div>
-                      <span className="text-xs font-mono font-bold text-[#2F80ED]">
-                        Available Today
-                      </span>
+
+                      {/* Prominent High-Contrast Close/Cancel Button in Header */}
+                      <button
+                        type="button"
+                        onClick={() => setSelectedService(null)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-gray-600 hover:text-red-600 hover:bg-red-50 border border-gray-200/90 shadow-sm transition-all text-xs font-bold shrink-0 cursor-pointer group"
+                        aria-label="Close dialog"
+                        title="Close (Esc)"
+                      >
+                        <span className="hidden sm:inline">Close</span>
+                        <X className="w-4 h-4 group-hover:rotate-90 transition-transform" />
+                      </button>
                     </div>
-                  )}
 
-                  {/* Action Buttons */}
-                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button
-                      onClick={() => setSelectedService(null)}
-                      className="px-5 py-2.5 text-xs font-bold text-[#4A6278] hover:text-[#0B2438]"
+                    {/* Scrollable Interior Content */}
+                    <div
+                      className="p-5 sm:p-7 space-y-6 overflow-y-auto flex-1 overscroll-contain"
+                      data-lenis-prevent
                     >
-                      Close
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedService(null);
-                        onOpenBooking();
-                      }}
-                      className="px-7 py-3 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#2F80ED] to-[#1E6FD9] hover:shadow-lg hover:shadow-blue-500/25 transition-all flex items-center gap-2"
-                    >
-                      <Calendar className="w-4 h-4" />
-                      <span>Book Consultation in {selectedService.title.split('&')[0]}</span>
-                    </button>
-                  </div>
+                      {/* Visual Simulator in Modal */}
+                      <DepartmentVisualSimulator serviceId={selectedService.id} isHovered={true} />
 
+                      <p className="text-xs sm:text-sm text-[#4A6278] leading-relaxed font-normal">
+                        {selectedService.description} Every case is managed under rigorous peer-reviewed clinical pathways with direct multidisciplinary board oversight.
+                      </p>
+
+                      {/* 3 Metric Pillars */}
+                      <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+                        {selectedTheme.metrics.map((m, idx) => (
+                          <div key={idx} className="p-3 sm:p-3.5 rounded-2xl bg-gray-50 border border-gray-100 text-center">
+                            <span className="text-base sm:text-lg font-black text-[#2F80ED] font-mono block">
+                              {m.val}
+                            </span>
+                            <span className="text-[9px] sm:text-[10px] font-bold text-[#4A6278] uppercase">
+                              {m.label}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Lead Specialist Row */}
+                      {leadDoctor && (
+                        <div className="p-3.5 sm:p-4 rounded-2xl bg-blue-50/60 border border-blue-100 flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={leadDoctor.image}
+                              alt={leadDoctor.name}
+                              className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl object-cover border-2 border-white shadow-sm shrink-0"
+                            />
+                            <div>
+                              <span className="text-[9px] sm:text-[10px] font-bold text-[#2F80ED] uppercase tracking-wider block">
+                                Department Chair
+                              </span>
+                              <h5 className="text-xs sm:text-sm font-bold text-[#0B2438]">
+                                {leadDoctor.name}
+                              </h5>
+                              <p className="text-[10px] sm:text-[11px] text-[#4A6278] line-clamp-1">
+                                {leadDoctor.role}
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-[11px] sm:text-xs font-mono font-bold text-[#2F80ED] shrink-0">
+                            Available Today
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Sticky Action Buttons Footer */}
+                    <div className="p-4 sm:p-5 border-t border-gray-100 bg-white/95 backdrop-blur-md flex items-center justify-end gap-2.5 sm:gap-3 shrink-0 sticky bottom-0 z-20">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedService(null)}
+                        className="px-5 py-2.5 rounded-full text-xs font-bold text-[#4A6278] hover:text-[#0B2438] hover:bg-gray-100 transition-colors cursor-pointer border border-transparent hover:border-gray-200"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedService(null);
+                          onOpenBooking();
+                        }}
+                        className="px-5 sm:px-7 py-2.5 sm:py-3 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#2F80ED] to-[#1E6FD9] hover:shadow-lg hover:shadow-blue-500/25 transition-all flex items-center gap-2 cursor-pointer"
+                      >
+                        <Calendar className="w-4 h-4" />
+                        <span>Book Consultation in {selectedService.title.split('&')[0]}</span>
+                      </button>
+                    </div>
+
+                  </motion.div>
                 </div>
-              </motion.div>
-            </div>
+              )}
+            </AnimatePresence>,
+            document.body
           )}
-        </AnimatePresence>
 
       </div>
     </section>
